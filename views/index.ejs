@@ -230,7 +230,7 @@
         <p>Pengalaman nyata pelanggan travel & carteran DH Trans</p>
       </div>
       <div class="testimonials-grid">
-        ${testimonials.map((t, i) => '<div class="testimonial-card animate-on-scroll stagger-' + (i % 4 + 1) + '"><div class="testimonial-stars">' + Array(t.rating).fill('<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>').join('') + '</div><p class="testimonial-text">' + t.comment + '</p><div class="testimonial-author"><div class="testimonial-avatar">' + t.name.charAt(0) + '</div><div class="testimonial-author-info"><h4>' + t.name + '</h4><p>' + (t.route_text || '') + '</p></div></div></div>').join('')}
+        ${testimonials.map((t, i) => '<div class="testimonial-card animate-on-scroll stagger-' + (i % 4 + 1) + '"><div class="testimonial-stars">' + Array(t.rating).fill('<svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>').join('') + '</div><p class="testimonial-text">' + t.comment + '</p><div class="testimonial-author"><div class="testimonial-avatar">' + t.name.charAt(0) + '</div><div class="testimonial-author-info"><h4>' + t.name + '</h4><p>' + (t.route_text || '') + '</p></div></div></div>').join('')}
       </div>
     </div>
   </section>
