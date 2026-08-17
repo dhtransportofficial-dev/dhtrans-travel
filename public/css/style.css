@@ -2538,66 +2538,383 @@ textarea.form-control {
     font-size: 1.45rem;
   }
 
-  /* --- Driver Contact Card & Instagram Card --- */
+  /* --- Premium Driver Contact Card & Luxury Instagram Card --- */
   .driver-contact-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid rgba(212, 168, 67, 0.35);
+    box-shadow: 0 8px 24px rgba(10, 22, 40, 0.08), 0 2px 6px rgba(10, 22, 40, 0.04);
     padding: 1rem;
-    margin-top: 0.85rem;
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
     box-sizing: border-box;
     width: 100%;
   }
-  .driver-contact-card h4 {
-    font-size: 0.88rem;
+
+  .driver-contact-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--navy-800), var(--gold-500), var(--navy-800));
+  }
+
+  .driver-contact-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.65rem;
     margin-bottom: 0.65rem;
+    border-bottom: 1.5px solid var(--gray-100);
   }
-  .driver-item {
-    padding: 7px 10px;
-    flex-wrap: wrap;
-    gap: 6px;
+
+  .driver-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
+
+  .driver-header-icon {
+    font-size: 1.2rem;
+  }
+
+  .driver-header-title h4 {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--navy-900);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .driver-header-sub {
+    font-size: 0.68rem;
+    color: var(--gray-500);
+    margin: 0;
+  }
+
+  .live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #10b981;
+    animation: pulseDot 1.5s infinite;
+  }
+
+  @keyframes pulseDot {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+  }
+
+  .driver-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .driver-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .driver-box-gold {
+    border-left: 3.5px solid var(--gold-500);
+    background: #fffdfa;
+  }
+
+  .driver-box-cs {
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+    border: 1px solid #bfdbfe;
+    border-left: 3.5px solid #2563eb;
+  }
+
+  .driver-avatar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .driver-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy-800), var(--navy-900));
+    color: var(--gold-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.78rem;
+    border: 2px solid var(--gold-500);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+  }
+
+  .cs-avatar {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    color: white;
+    border-color: #93c5fd;
+    font-size: 0.95rem;
+  }
+
+  .driver-duty-badge {
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--navy-800);
+    margin-top: 2px;
+    background: rgba(212, 168, 67, 0.2);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .cs-badge {
+    background: rgba(37, 99, 235, 0.15);
+    color: #1e40af;
+  }
+
+  .driver-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .driver-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
   .driver-name {
+    font-weight: 800;
+    color: var(--navy-900);
     font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+
+  .cs-name {
+    color: #1e40af;
+  }
+
+  .driver-status-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #059669;
+    background: #d1fae5;
+    padding: 1px 5px;
+    border-radius: var(--radius-full);
+  }
+
+  .cs-tag {
+    color: #2563eb;
+    background: #dbeafe;
+  }
+
   .driver-phone {
     font-size: 0.72rem;
+    color: #475569;
+    font-family: monospace;
+    font-weight: 600;
   }
-  .btn-wa-compact {
-    padding: 4px 10px;
+
+  .btn-wa-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white !important;
+    padding: 5px 8px;
+    border-radius: var(--radius-sm);
     font-size: 0.72rem;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 2px;
+    box-shadow: 0 2px 5px rgba(37, 211, 102, 0.25);
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
   }
+
+  .btn-wa-action:hover {
+    background: linear-gradient(135deg, #22bf5b, #0f7569);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(37, 211, 102, 0.35);
+  }
+
+  .btn-cs-action {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 2px 5px rgba(37, 99, 235, 0.25);
+  }
+
+  .btn-cs-action:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
+  }
+
+  /* Luxury Official Instagram Card */
   .instagram-card {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    border-radius: var(--radius-lg);
     padding: 1rem;
-    margin-top: 0.85rem;
-    gap: 0.5rem;
+    color: white;
+    margin-top: 1rem;
+    box-shadow: 0 8px 24px rgba(214, 36, 159, 0.25), 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: relative;
+    overflow: hidden;
     box-sizing: border-box;
     width: 100%;
-    max-width: 100%;
-    overflow: hidden;
   }
+
+  .instagram-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%);
+    pointer-events: none;
+  }
+
   .instagram-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .instagram-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .instagram-icon-box {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(6px);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .instagram-handle {
+    font-weight: 900;
+    font-size: 0.88rem;
+    color: white;
+    font-family: var(--font-primary);
+    line-height: 1.2;
+  }
+
+  .instagram-sub {
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .instagram-badge {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(4px);
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  }
+
+  .instagram-pills {
+    display: flex;
     flex-wrap: wrap;
     gap: 4px;
+    position: relative;
+    z-index: 1;
   }
-  .instagram-handle {
-    font-size: 0.85rem;
-    font-weight: 800;
-  }
-  .instagram-badge {
+
+  .ig-pill {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
     font-size: 0.62rem;
-    padding: 2px 6px;
+    font-weight: 600;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
+
   .instagram-desc {
-    font-size: 0.75rem;
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.95);
     line-height: 1.35;
+    margin: 0;
+    position: relative;
+    z-index: 1;
   }
+
   .btn-ig-compact {
-    font-size: 0.78rem;
-    padding: 7px 12px;
-    width: 100%;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
+    gap: 5px;
+    background: white;
+    color: #c13584 !important;
+    padding: 7px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+    width: 100%;
     box-sizing: border-box;
+    text-align: center;
+  }
+
+  .btn-ig-compact:hover {
+    background: #fff0f5;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28);
   }
 
   /* --- Checkpoint Grid in Tracking --- */
