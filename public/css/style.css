@@ -815,85 +815,121 @@ textarea.form-control {
   margin: 0 2px;
 }
 
-.schedule-table {
-  width: 100%;
-  border-collapse: collapse;
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  gap: 0.6rem;
+  background: #f8fafc;
 }
 
-.schedule-table th {
-  background: var(--gray-50);
-  padding: 8px 12px;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--gray-600);
-  text-align: left;
-  border-bottom: 1.5px solid var(--gray-100);
-}
-
-.schedule-table td {
-  padding: 9px 12px;
-  border-bottom: 1px solid var(--gray-100);
-  font-size: 0.85rem;
-}
-
-.schedule-table tr:last-child td {
-  border-bottom: none;
-}
-
-.schedule-table tr:hover td {
-  background: rgba(212, 168, 67, 0.04);
-}
-
-.time-badge {
-  display: inline-flex;
+.schedule-item-card {
+  background: white;
+  border-radius: var(--radius-md);
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  font-weight: 700;
-  color: var(--navy-800);
-  font-size: 0.9rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  box-shadow: 0 2px 5px rgba(10, 22, 40, 0.03);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.time-badge svg {
-  color: var(--gold-500);
-  width: 15px;
-  height: 15px;
+.schedule-item-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold-400);
+  box-shadow: 0 4px 12px rgba(212, 168, 67, 0.15);
 }
 
-.via-badge {
-  display: inline-flex;
+.schedule-info-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.schedule-time {
+  display: flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 8px;
+  font-size: 0.88rem;
+  color: var(--navy-900);
+}
+
+.schedule-via-tag {
   background: var(--navy-800);
-  color: var(--white);
+  color: white;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
-  font-weight: 500;
+  font-size: 0.68rem;
+  font-weight: 600;
 }
 
-.via-badge svg {
-  width: 12px;
-  height: 12px;
+.schedule-info-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.price-tag {
-  font-weight: 700;
+.schedule-price {
+  text-align: right;
+  line-height: 1.2;
+}
+
+.schedule-price strong {
   color: var(--gold-600);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
+  display: block;
 }
 
-.price-tag small {
-  font-size: 0.72rem;
-  font-weight: normal;
+.schedule-price small {
   color: var(--gray-500);
+  font-size: 0.68rem;
 }
 
-.btn-book-schedule {
-  padding: 6px 14px;
-  font-size: 0.8rem;
-  border-radius: var(--radius-full);
+.btn-book-ticket {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
+  color: var(--navy-950) !important;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(212, 168, 67, 0.3);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-book-ticket:hover {
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-500));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(212, 168, 67, 0.4);
+}
+
+@media (max-width: 480px) {
+  .schedule-item-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0.7rem 0.8rem;
+  }
+  .schedule-info-left {
+    justify-content: space-between;
+  }
+  .schedule-info-right {
+    justify-content: space-between;
+    padding-top: 6px;
+    border-top: 1px dashed #e2e8f0;
+  }
+  .schedule-price {
+    text-align: left;
+  }
 }
 
 /* ============================================
@@ -2415,73 +2451,28 @@ textarea.form-control {
     margin: 0;
   }
 
-  /* Transform table to clean responsive flex rows */
-  .schedule-table thead {
-    display: none;
+  /* Mobile Schedule List */
+  .schedule-list {
+    padding: 0.6rem;
+    gap: 0.5rem;
   }
-  .schedule-table,
-  .schedule-table tbody {
-    display: block;
-    width: 100%;
+  .schedule-item-card {
+    padding: 0.65rem 0.85rem;
+    gap: 6px;
   }
-  .schedule-table tr {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 4px 8px;
-    padding: 7px 10px;
-    border-bottom: 1px solid var(--gray-100);
-    box-sizing: border-box;
-  }
-  .schedule-table tr:last-child {
-    border-bottom: none;
-  }
-  .schedule-table td {
-    padding: 0;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-  }
-  .schedule-table td:nth-child(1) {
+  .schedule-time {
     font-size: 0.82rem;
-    font-weight: 700;
   }
-  .schedule-table td:nth-child(2) {
-    margin-right: auto;
-    margin-left: 4px;
-  }
-  .schedule-table td:nth-child(3) {
-    font-weight: 700;
-    font-size: 0.8rem;
-    color: var(--gold-600);
-  }
-  .time-badge {
-    font-size: 0.82rem;
-    gap: 3px;
-  }
-  .time-badge svg {
-    width: 13px;
-    height: 13px;
-  }
-  .via-badge {
+  .schedule-via-tag {
     font-size: 0.65rem;
     padding: 2px 6px;
-    border-radius: var(--radius-sm);
   }
-  .price-tag {
-    font-size: 0.8rem;
-    font-weight: 700;
+  .schedule-price strong {
+    font-size: 0.88rem;
   }
-  .price-tag small {
-    font-size: 0.65rem;
-  }
-  .btn-book-schedule,
-  .schedule-table .btn-sm {
-    padding: 4px 9px;
+  .btn-book-ticket {
     font-size: 0.72rem;
-    font-weight: 700;
-    border-radius: var(--radius-sm);
+    padding: 5px 10px;
   }
 
   /* --- Booking Form Page --- */

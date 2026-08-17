@@ -179,44 +179,68 @@
         <p>Berangkat setiap hari • Kapasitas maksimal 6 kursi per mobil</p>
       </div>
       <div class="schedule-grid">
+        <!-- Mojokerto -> Malang -->
         <div class="schedule-card animate-on-scroll">
           <div class="schedule-card-header">
             <div class="route-icon">📍</div>
-            <h3>Mojokerto <span class="route-arrow">→</span> Malang</h3>
+            <div>
+              <h3>Mojokerto <span class="route-arrow">→</span> Malang</h3>
+              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 2px;">Berangkat setiap hari • Door to Door</p>
+            </div>
           </div>
-          <table class="schedule-table">
-            <thead>
-              <tr>
-                <th>Jam Berangkat</th>
-                <th>Via</th>
-                <th>Harga/Orang</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              ${schedules.filter(s => s.origin === 'Mojokerto').map(s => '<tr><td><span class="time-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + s.departure_time + ' WIB</span></td><td><span class="via-badge">' + s.via + '</span></td><td><span class="price-tag">Rp' + s.price.toLocaleString("id-ID") + ' <small>/org</small></span></td><td><a href="/booking?schedule=' + s.id + '" class="btn btn-primary btn-book-schedule">Pesan</a></td></tr>').join('')}
-            </tbody>
-          </table>
+          <div class="schedule-list">
+            ${schedules.filter(s => s.origin === 'Mojokerto').map(s => `
+              <div class="schedule-item-card">
+                <div class="schedule-info-left">
+                  <div class="schedule-time">
+                    <span>⏰</span> <strong>${s.departure_time} WIB</strong>
+                  </div>
+                  <span class="schedule-via-tag">Via ${s.via}</span>
+                </div>
+                <div class="schedule-info-right">
+                  <div class="schedule-price">
+                    <strong>Rp${s.price.toLocaleString("id-ID")}</strong>
+                    <small>/orang</small>
+                  </div>
+                  <a href="/booking?schedule=${s.id}" class="btn-book-ticket">
+                    Pesan Tiket →
+                  </a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
 
+        <!-- Malang -> Mojokerto -->
         <div class="schedule-card animate-on-scroll">
           <div class="schedule-card-header">
             <div class="route-icon">📍</div>
-            <h3>Malang <span class="route-arrow">→</span> Mojokerto</h3>
+            <div>
+              <h3>Malang <span class="route-arrow">→</span> Mojokerto</h3>
+              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 2px;">Berangkat setiap hari • Door to Door</p>
+            </div>
           </div>
-          <table class="schedule-table">
-            <thead>
-              <tr>
-                <th>Jam Berangkat</th>
-                <th>Via</th>
-                <th>Harga/Orang</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              ${schedules.filter(s => s.origin === 'Malang').map(s => '<tr><td><span class="time-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + s.departure_time + ' WIB</span></td><td><span class="via-badge">' + s.via + '</span></td><td><span class="price-tag">Rp' + s.price.toLocaleString("id-ID") + ' <small>/org</small></span></td><td><a href="/booking?schedule=' + s.id + '" class="btn btn-primary btn-book-schedule">Pesan</a></td></tr>').join('')}
-            </tbody>
-          </table>
+          <div class="schedule-list">
+            ${schedules.filter(s => s.origin === 'Malang').map(s => `
+              <div class="schedule-item-card">
+                <div class="schedule-info-left">
+                  <div class="schedule-time">
+                    <span>⏰</span> <strong>${s.departure_time} WIB</strong>
+                  </div>
+                  <span class="schedule-via-tag">Via ${s.via}</span>
+                </div>
+                <div class="schedule-info-right">
+                  <div class="schedule-price">
+                    <strong>Rp${s.price.toLocaleString("id-ID")}</strong>
+                    <small>/orang</small>
+                  </div>
+                  <a href="/booking?schedule=${s.id}" class="btn-book-ticket">
+                    Pesan Tiket →
+                  </a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     </div>
