@@ -38,47 +38,47 @@
       </div>
 
       <!-- Tracking Layout -->
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: flex-start;">
+      <div class="tracking-grid">
         <!-- Left: Map & Live Telemetry -->
         <div>
           <div class="card" style="overflow: hidden; box-shadow: var(--shadow-lg); border-radius: var(--radius-lg);">
             <!-- Map Status Bar -->
-            <div style="background: linear-gradient(135deg, var(--navy-900), var(--navy-800)); color: white; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #2ecc71; animation: pulse 1.5s infinite;"></span>
-                <strong style="font-size: 0.95rem;">GPS SIGNAL: ONLINE (LIVE REAL-TIME)</strong>
+            <div style="background: linear-gradient(135deg, var(--navy-900), var(--navy-800)); color: white; padding: 1rem 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #2ecc71; animation: pulse 1.5s infinite;"></span>
+                <strong style="font-size: 0.88rem;">GPS: ONLINE (LIVE REAL-TIME)</strong>
               </div>
-              <div style="font-size: 0.85rem; color: var(--gold-400);">
-                📡 Update Terakhir: <span id="lastUpdate">Baru saja</span>
+              <div style="font-size: 0.78rem; color: var(--gold-400);">
+                📡 Update: <span id="lastUpdate">Baru saja</span>
               </div>
             </div>
 
             <!-- Interactive Map Container -->
-            <div id="gpsMap" style="height: 480px; width: 100%; background: #e5e3df; z-index: 1;"></div>
+            <div id="gpsMap" style="height: 360px; width: 100%; background: #e5e3df; z-index: 1;"></div>
 
             <!-- Map Controls & Progress -->
-            <div style="padding: 1.2rem 1.5rem; background: white; border-top: 1px solid var(--gray-200);">
-              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">
+            <div style="padding: 1rem 1.2rem; background: white; border-top: 1px solid var(--gray-200);">
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px;">
                 <span style="color: var(--navy-800);">🏁 Progres Perjalanan</span>
                 <span style="color: var(--gold-600);" id="progressText">65% (Sedang Melaju)</span>
               </div>
-              <div style="width: 100%; height: 10px; background: var(--gray-200); border-radius: 6px; overflow: hidden;">
+              <div style="width: 100%; height: 8px; background: var(--gray-200); border-radius: 6px; overflow: hidden;">
                 <div id="progressBar" style="width: 65%; height: 100%; background: linear-gradient(90deg, var(--navy-700), var(--gold-500)); border-radius: 6px; transition: width 0.5s ease;"></div>
               </div>
 
               <!-- Live Route Checkpoints -->
-              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 1rem; text-align: center; font-size: 0.75rem;">
+              <div class="checkpoint-grid">
                 <div style="padding: 6px; background: #e8f5e9; border-radius: 4px; color: #2e7d32; font-weight: 600;">
-                  ✓ Mojokerto Kota
+                  ✓ Mojokerto
                 </div>
                 <div style="padding: 6px; background: #e8f5e9; border-radius: 4px; color: #2e7d32; font-weight: 600;">
                   ✓ Tol Gempol
                 </div>
                 <div style="padding: 6px; background: #fff8e1; border-radius: 4px; color: #f57f17; font-weight: 700; border: 1px solid #ffd54f;">
-                  🚗 Tol Pandaan (Sekarang)
+                  🚗 Pandaan (Kini)
                 </div>
                 <div style="padding: 6px; background: var(--gray-100); border-radius: 4px; color: var(--gray-600);">
-                  📍 Malang Kota (Tujuan)
+                  📍 Malang (Tujuan)
                 </div>
               </div>
             </div>

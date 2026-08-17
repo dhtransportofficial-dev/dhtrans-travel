@@ -326,17 +326,20 @@ app.get('/jadwal', (req, res) => {
   const routes = db.prepare('SELECT * FROM routes WHERE is_active = 1').all();
   res.render('schedule', { schedules, routes, page: 'jadwal' });
 });
+app.get('/schedule', (req, res) => res.redirect('/jadwal'));
 
 // Fleet page
 app.get('/armada', (req, res) => {
   const fleet = db.prepare('SELECT * FROM fleet WHERE is_active = 1').all();
   res.render('fleet', { fleet, page: 'armada' });
 });
+app.get('/fleet', (req, res) => res.redirect('/armada'));
 
 // Contact page
 app.get('/kontak', (req, res) => {
   res.render('contact', { page: 'kontak', success: false });
 });
+app.get('/contact', (req, res) => res.redirect('/kontak'));
 
 app.post('/kontak', (req, res) => {
   const { name, email, phone, subject, message } = req.body;
