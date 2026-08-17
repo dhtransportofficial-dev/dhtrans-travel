@@ -868,6 +868,78 @@ textarea.form-control {
   font-weight: 600;
 }
 
+/* Colorful Schedule Themes */
+.schedule-card-navy {
+  border: 2px solid #3b82f6 !important;
+  box-shadow: 0 10px 25px rgba(30, 58, 138, 0.1) !important;
+}
+
+.schedule-header-navy {
+  background: linear-gradient(135deg, #0A1628 0%, #1e3a8a 100%) !important;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.schedule-card-teal {
+  border: 2px solid #10b981 !important;
+  box-shadow: 0 10px 25px rgba(6, 78, 59, 0.1) !important;
+}
+
+.schedule-header-teal {
+  background: linear-gradient(135deg, #064e3b 0%, #0d9488 100%) !important;
+  border-bottom: 2px solid #10b981;
+}
+
+.route-icon-gold {
+  background: rgba(212, 168, 67, 0.25) !important;
+  color: #ffd700 !important;
+}
+
+.route-icon-teal {
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #34d399 !important;
+}
+
+.tag-tol {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.tag-pandaan {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
+}
+
+.schedule-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-wa-table {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: white !important;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-wa-table:hover {
+  background: linear-gradient(135deg, #22bf5b, #0f7569);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5);
+}
+
 .schedule-info-right {
   display: flex;
   align-items: center;
@@ -894,22 +966,22 @@ textarea.form-control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--gold-500), var(--gold-600));
-  color: var(--navy-950) !important;
-  font-weight: 800;
+  background: white;
+  color: var(--navy-900) !important;
+  border: 1.5px solid var(--navy-800);
+  font-weight: 700;
   font-size: 0.75rem;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: var(--radius-md);
   text-decoration: none;
-  box-shadow: 0 2px 6px rgba(212, 168, 67, 0.3);
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .btn-book-ticket:hover {
-  background: linear-gradient(135deg, var(--gold-400), var(--gold-500));
+  background: var(--navy-800);
+  color: white !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(212, 168, 67, 0.4);
 }
 
 @media (max-width: 480px) {
@@ -929,6 +1001,17 @@ textarea.form-control {
   }
   .schedule-price {
     text-align: left;
+  }
+  .schedule-actions-row {
+    width: 100%;
+  }
+  .btn-wa-table {
+    flex: 1;
+    justify-content: center;
+    padding: 7px 10px;
+  }
+  .btn-book-ticket {
+    padding: 7px 10px;
   }
 }
 

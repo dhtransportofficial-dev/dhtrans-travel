@@ -26,13 +26,13 @@
       </div>
 
       <div class="schedule-grid">
-        <!-- Mojokerto -> Malang -->
-        <div class="schedule-card animate-on-scroll">
-          <div class="schedule-card-header">
-            <div class="route-icon">📍</div>
+        <!-- Mojokerto -> Malang (Navy & Gold Theme) -->
+        <div class="schedule-card schedule-card-navy animate-on-scroll">
+          <div class="schedule-card-header schedule-header-navy">
+            <div class="route-icon route-icon-gold">📍</div>
             <div>
               <h3>Mojokerto <span class="route-arrow">→</span> Malang</h3>
-              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 2px;">Berangkat setiap hari • Door to Door</p>
+              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.8); margin-top: 2px;">Jadwal Reguler • Door to Door (Setiap Hari)</p>
             </div>
           </div>
           <div class="schedule-list">
@@ -42,29 +42,34 @@
                   <div class="schedule-time">
                     <span>⏰</span> <strong>${s.departure_time} WIB</strong>
                   </div>
-                  <span class="schedule-via-tag">Via ${s.via}</span>
+                  <span class="schedule-via-tag ${s.via.toLowerCase().includes('tol') ? 'tag-tol' : 'tag-pandaan'}">Via ${s.via}</span>
                 </div>
                 <div class="schedule-info-right">
                   <div class="schedule-price">
                     <strong>Rp${s.price.toLocaleString("id-ID")}</strong>
                     <small>/orang</small>
                   </div>
-                  <a href="/booking?schedule=${s.id}" class="btn-book-ticket">
-                    Pesan Tiket →
-                  </a>
+                  <div class="schedule-actions-row">
+                    <a href="https://wa.me/6289671969214?text=${encodeURIComponent('Halo DH Trans! Saya mau pesan tiket travel Mojokerto ke Malang jam ' + s.departure_time + ' WIB (Via ' + s.via + '). Apakah kursi masih tersedia?')}" target="_blank" rel="noopener" class="btn-wa-table">
+                      💬 Chat WA
+                    </a>
+                    <a href="/booking?schedule=${s.id}" class="btn-book-ticket">
+                      Form Web
+                    </a>
+                  </div>
                 </div>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <!-- Malang -> Mojokerto -->
-        <div class="schedule-card animate-on-scroll">
-          <div class="schedule-card-header">
-            <div class="route-icon">📍</div>
+        <!-- Malang -> Mojokerto (Teal & Emerald Theme) -->
+        <div class="schedule-card schedule-card-teal animate-on-scroll">
+          <div class="schedule-card-header schedule-header-teal">
+            <div class="route-icon route-icon-teal">📍</div>
             <div>
               <h3>Malang <span class="route-arrow">→</span> Mojokerto</h3>
-              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 2px;">Berangkat setiap hari • Door to Door</p>
+              <p style="font-size: 0.75rem; color: rgba(255,255,255,0.8); margin-top: 2px;">Jadwal Reguler • Door to Door (Setiap Hari)</p>
             </div>
           </div>
           <div class="schedule-list">
@@ -74,16 +79,21 @@
                   <div class="schedule-time">
                     <span>⏰</span> <strong>${s.departure_time} WIB</strong>
                   </div>
-                  <span class="schedule-via-tag">Via ${s.via}</span>
+                  <span class="schedule-via-tag ${s.via.toLowerCase().includes('tol') ? 'tag-tol' : 'tag-pandaan'}">Via ${s.via}</span>
                 </div>
                 <div class="schedule-info-right">
                   <div class="schedule-price">
                     <strong>Rp${s.price.toLocaleString("id-ID")}</strong>
                     <small>/orang</small>
                   </div>
-                  <a href="/booking?schedule=${s.id}" class="btn-book-ticket">
-                    Pesan Tiket →
-                  </a>
+                  <div class="schedule-actions-row">
+                    <a href="https://wa.me/6289671969214?text=${encodeURIComponent('Halo DH Trans! Saya mau pesan tiket travel Malang ke Mojokerto jam ' + s.departure_time + ' WIB (Via ' + s.via + '). Apakah kursi masih tersedia?')}" target="_blank" rel="noopener" class="btn-wa-table">
+                      💬 Chat WA
+                    </a>
+                    <a href="/booking?schedule=${s.id}" class="btn-book-ticket">
+                      Form Web
+                    </a>
+                  </div>
                 </div>
               </div>
             `).join('')}
