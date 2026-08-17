@@ -99,6 +99,8 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -109,6 +111,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
 }
 
 a {
@@ -2179,6 +2183,8 @@ textarea.form-control {
 
   /* --- Hero --- */
   .hero { min-height: 85vh; padding: 5rem 0 2rem; }
+  .hero-inner { grid-template-columns: 1fr !important; gap: 1.5rem; padding-top: 60px; }
+  .hero-card-wrapper { display: none; } /* hide right-side card on mobile */
   .hero h1 { font-size: 2rem; line-height: 1.2; }
   .hero p { font-size: 1rem; }
   .hero-features { flex-direction: column; gap: 0.75rem; }
@@ -2194,11 +2200,13 @@ textarea.form-control {
   .section-header h2 { font-size: 1.6rem; }
   .section-header p { font-size: 0.9rem; }
 
-  /* --- Features/Cards Grid --- */
-  .features-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .fleet-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .testimonials-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .why-grid { grid-template-columns: 1fr; gap: 1rem; }
+  /* --- ALL multi-column grids → 1 column on mobile --- */
+  .features-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+  .fleet-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+  .testimonials-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+  .why-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+  .schedule-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+  .contact-grid { grid-template-columns: 1fr !important; }
 
   /* --- Fleet cards --- */
   .fleet-card { border-radius: 12px; }
