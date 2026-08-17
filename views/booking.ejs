@@ -16,15 +16,15 @@
   <section class="booking-section">
     <div class="container">
       <!-- Area Coverage Note & Carter Switch -->
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 2rem;">
-        <div style="background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(10,22,40,0.05)); border: 1px solid rgba(212,168,67,0.4); border-radius: var(--radius-lg); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+      <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div style="flex: 2; min-width: 240px; background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(10,22,40,0.05)); border: 1px solid rgba(212,168,67,0.4); border-radius: var(--radius-lg); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
           <span style="font-size: 1.8rem;">ℹ️</span>
           <div style="font-size: 0.88rem; color: var(--navy-800);">
             <strong>Jangkauan Wilayah:</strong> Penjemputan / pengantaran dalam kota (Mojokerto Kota & Malang Kota) berlaku tarif standar. Untuk wilayah <strong>Kabupaten Mojokerto / Kabupaten Malang</strong> dikenakan biaya tambahan <strong>+Rp20.000 / orang</strong>.
           </div>
         </div>
 
-        <div style="background: linear-gradient(135deg, var(--navy-800), var(--navy-700)); color: white; border-radius: var(--radius-lg); padding: 1rem 1.2rem; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+        <div style="flex: 1; min-width: 200px; background: linear-gradient(135deg, var(--navy-800), var(--navy-700)); color: white; border-radius: var(--radius-lg); padding: 1rem 1.2rem; display: flex; flex-direction: column; justify-content: center; text-align: center;">
           <div style="font-size: 0.85rem; color: var(--gold-400); font-weight: 600;">Ingin 1 Mobil Khusus / Rombongan?</div>
           <a href="/carter" style="display: inline-block; margin-top: 6px; font-size: 0.82rem; color: white; background: var(--gold-500); padding: 6px 12px; border-radius: var(--radius-full); font-weight: 700;">
             Sewa Carteran Privat →
@@ -94,12 +94,12 @@
                 <label style="font-weight: 700; color: var(--navy-800); display: flex; align-items: center; gap: 6px;">
                   📍 Wilayah Penjemputan (Titik Jemput) *
                 </label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 6px;">
-                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 6px;">
+                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
                     <input type="radio" name="pickup_zone" value="kota" checked onchange="updateSummary()">
                     <span>🏙️ <strong>Dalam Kota</strong> (Tarif Normal)</span>
                   </label>
-                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
                     <input type="radio" name="pickup_zone" value="kabupaten" onchange="updateSummary()">
                     <span>🏡 <strong>Wilayah Kabupaten</strong> (+Rp20rb/org)</span>
                   </label>
@@ -118,12 +118,12 @@
                 <label style="font-weight: 700; color: var(--navy-800); display: flex; align-items: center; gap: 6px;">
                   🏁 Wilayah Pengantaran (Titik Tujuan) *
                 </label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 6px;">
-                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 6px;">
+                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
                     <input type="radio" name="dropoff_zone" value="kota" checked onchange="updateSummary()">
                     <span>🏙️ <strong>Dalam Kota</strong> (Tarif Normal)</span>
                   </label>
-                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
                     <input type="radio" name="dropoff_zone" value="kabupaten" onchange="updateSummary()">
                     <span>🏡 <strong>Wilayah Kabupaten</strong> (+Rp20rb/org)</span>
                   </label>

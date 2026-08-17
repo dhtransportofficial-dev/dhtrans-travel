@@ -2466,4 +2466,116 @@ textarea.form-control {
   .hero { min-height: auto; padding: 2rem 0; }
 }
 
-/* mobile update 08/18/2026 04:49:08 */
+/* ============================================
+   MOBILE COMPREHENSIVE FIX v2 - 2026-08-18
+   ============================================ */
+@media (max-width: 768px) {
+
+  /* --- Booking page grid: form + sidebar stack vertically --- */
+  .booking-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+
+  /* --- Sidebar no longer sticky on mobile (causes layout issues) --- */
+  .booking-sidebar {
+    position: static !important;
+    top: unset;
+  }
+
+  /* --- Booking form card padding reduced --- */
+  .booking-form-card {
+    padding: 1.25rem;
+  }
+
+  /* --- Summary row: allow text to wrap, not be cut --- */
+  .summary-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .summary-row .value {
+    text-align: right;
+    word-break: break-word;
+    max-width: 60%;
+  }
+  .summary-total .total-price {
+    font-size: 1.6rem;
+  }
+
+  /* --- Schedule table: horizontal scroll --- */
+  .schedule-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .schedule-table-wrapper,
+  .schedule-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .schedule-table {
+    min-width: 480px;
+    font-size: 0.82rem;
+  }
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+
+  /* --- Booking detail grid (cek booking result) --- */
+  .booking-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .booking-result-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* --- Ensure no element overflows viewport --- */
+  .container {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    overflow-x: hidden;
+  }
+
+  /* --- Fix any remaining inline wide elements --- */
+  img, table, iframe, video {
+    max-width: 100% !important;
+  }
+
+  /* --- Tracking page stats --- */
+  .tracking-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+  }
+
+  /* --- Charter form --- */
+  .charter-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* --- Footer bottom row --- */
+  .footer-bottom {
+    flex-direction: column !important;
+    gap: 0.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+
+  /* --- Page header reduced padding --- */
+  .page-header {
+    padding: 4rem 0 1.5rem;
+  }
+  .page-header h1 {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-form-card { padding: 1rem; }
+  .booking-summary { padding: 1rem; }
+  .summary-total .total-price { font-size: 1.4rem; }
+  .page-header h1 { font-size: 1.3rem !important; }
+  .hero h1 { font-size: 1.5rem !important; }
+}
