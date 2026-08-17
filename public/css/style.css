@@ -655,14 +655,14 @@ h1, h2, h3, h4, h5, h6 {
    FORM ELEMENTS
    ============================================ */
 .form-group {
-  margin-bottom: var(--space-lg);
+  margin-bottom: 1rem;
 }
 
 .form-group label {
   display: block;
   font-weight: 600;
-  font-size: 0.85rem;
-  margin-bottom: var(--space-sm);
+  font-size: 0.82rem;
+  margin-bottom: 4px;
   color: var(--gray-700);
 }
 
@@ -672,19 +672,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-control {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid var(--gray-200);
+  padding: 9px 12px;
+  border: 1.5px solid var(--gray-200);
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   background: var(--white);
   color: var(--gray-800);
   transition: all var(--transition-fast);
   outline: none;
+  box-sizing: border-box;
 }
 
 .form-control:focus {
   border-color: var(--gold-500);
-  box-shadow: 0 0 0 4px rgba(212, 168, 67, 0.15);
+  box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
 }
 
 .form-control.dark {
@@ -695,7 +696,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-control.dark:focus {
   border-color: var(--gold-500);
-  box-shadow: 0 0 0 4px rgba(212, 168, 67, 0.2);
+  box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.2);
 }
 
 .form-control.dark::placeholder {
@@ -704,15 +705,15 @@ h1, h2, h3, h4, h5, h6 {
 
 select.form-control {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+  background-position: right 10px center;
+  padding-right: 32px;
 }
 
 textarea.form-control {
   resize: vertical;
-  min-height: 100px;
+  min-height: 80px;
 }
 
 .form-row {
@@ -722,9 +723,9 @@ textarea.form-control {
 }
 
 .form-note {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--gray-500);
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 /* ============================================
@@ -786,26 +787,26 @@ textarea.form-control {
 .schedule-card-header {
   background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
   color: var(--white);
-  padding: var(--space-lg) var(--space-xl);
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 10px;
 }
 
 .schedule-card-header .route-icon {
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   background: rgba(212, 168, 67, 0.15);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: var(--gold-500);
 }
 
 .schedule-card-header h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .schedule-card-header .route-arrow {
@@ -821,20 +822,20 @@ textarea.form-control {
 
 .schedule-table th {
   background: var(--gray-50);
-  padding: 12px 16px;
+  padding: 8px 12px;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--gray-600);
   text-align: left;
-  border-bottom: 2px solid var(--gray-100);
+  border-bottom: 1.5px solid var(--gray-100);
 }
 
 .schedule-table td {
-  padding: 14px 16px;
+  padding: 9px 12px;
   border-bottom: 1px solid var(--gray-100);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .schedule-table tr:last-child td {
@@ -848,45 +849,44 @@ textarea.form-control {
 .time-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   font-weight: 700;
   color: var(--navy-800);
-  font-size: 1.05rem;
+  font-size: 0.9rem;
 }
 
 .time-badge svg {
   color: var(--gold-500);
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
 }
 
 .via-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
+  gap: 4px;
+  padding: 3px 8px;
   background: var(--navy-800);
   color: var(--white);
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 500;
 }
 
 .via-badge svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
 }
 
 .price-tag {
-  font-weight: 800;
-  font-family: var(--font-primary);
+  font-weight: 700;
   color: var(--gold-600);
-  font-size: 1.1rem;
+  font-size: 0.92rem;
 }
 
 .price-tag small {
-  font-weight: 400;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: normal;
   color: var(--gray-500);
 }
 
@@ -2429,8 +2429,8 @@ textarea.form-control {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 6px 8px;
-    padding: 10px 12px;
+    gap: 4px 8px;
+    padding: 7px 10px;
     border-bottom: 1px solid var(--gray-100);
     box-sizing: border-box;
   }
@@ -2444,42 +2444,42 @@ textarea.form-control {
     align-items: center;
   }
   .schedule-table td:nth-child(1) {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     font-weight: 700;
   }
   .schedule-table td:nth-child(2) {
     margin-right: auto;
-    margin-left: 6px;
+    margin-left: 4px;
   }
   .schedule-table td:nth-child(3) {
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--gold-600);
   }
   .time-badge {
-    font-size: 0.88rem;
-    gap: 4px;
+    font-size: 0.82rem;
+    gap: 3px;
   }
   .time-badge svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
   }
   .via-badge {
-    font-size: 0.7rem;
-    padding: 2px 7px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
     border-radius: var(--radius-sm);
   }
   .price-tag {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
   }
   .price-tag small {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
   }
   .btn-book-schedule,
   .schedule-table .btn-sm {
-    padding: 5px 11px;
-    font-size: 0.75rem;
+    padding: 4px 9px;
+    font-size: 0.72rem;
     font-weight: 700;
     border-radius: var(--radius-sm);
   }
