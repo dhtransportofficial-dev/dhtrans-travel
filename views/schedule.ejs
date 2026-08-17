@@ -1,0 +1,112 @@
+<% var title = 'Jadwal & Harga'; %>
+<%- include('layout', { body: `
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Beranda</a>
+        <span>/</span>
+        <span>Jadwal & Harga</span>
+      </div>
+      <h1>Jadwal & Harga</h1>
+      <p>Jadwal keberangkatan harian dan daftar harga travel DH Trans</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <!-- Info Banner -->
+      <div style="background: linear-gradient(135deg, var(--gold-500), var(--gold-400)); border-radius: var(--radius-lg); padding: 1.5rem 2rem; margin-bottom: 2.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <span style="font-size: 2rem;">🚐</span>
+        <div>
+          <h3 style="color: var(--navy-900); font-size: 1.1rem;">Setiap Hari Berangkat!</h3>
+          <p style="color: rgba(10,22,40,0.7); font-size: 0.9rem;">On time setiap saat • Layanan Door to Door • Driver Profesional</p>
+        </div>
+        <a href="/booking" class="btn" style="margin-left: auto; background: var(--navy-800); color: white;">Pesan Sekarang</a>
+      </div>
+
+      <div class="schedule-grid">
+        <!-- Mojokerto -> Malang -->
+        <div class="schedule-card animate-on-scroll">
+          <div class="schedule-card-header">
+            <div class="route-icon">📍</div>
+            <div>
+              <h3>Mojokerto <span class="route-arrow">→</span> Malang</h3>
+              <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 4px;">Berangkat setiap hari</p>
+            </div>
+          </div>
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Jam Berangkat</th>
+                <th>Via Rute</th>
+                <th>Harga / Orang</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${schedules.filter(s => s.origin === 'Mojokerto').map(s => '<tr><td><span class="time-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + s.departure_time + ' WIB</span></td><td><span class="via-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>' + s.via + '</span></td><td><span class="price-tag">Rp' + s.price.toLocaleString("id-ID") + ' <small>/orang</small></span></td><td><a href="/booking?schedule=' + s.id + '" class="btn btn-primary btn-sm">Pesan</a></td></tr>').join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Malang -> Mojokerto -->
+        <div class="schedule-card animate-on-scroll">
+          <div class="schedule-card-header">
+            <div class="route-icon">📍</div>
+            <div>
+              <h3>Malang <span class="route-arrow">→</span> Mojokerto</h3>
+              <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 4px;">Berangkat setiap hari</p>
+            </div>
+          </div>
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Jam Berangkat</th>
+                <th>Via Rute</th>
+                <th>Harga / Orang</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${schedules.filter(s => s.origin === 'Malang').map(s => '<tr><td><span class="time-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' + s.departure_time + ' WIB</span></td><td><span class="via-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>' + s.via + '</span></td><td><span class="price-tag">Rp' + s.price.toLocaleString("id-ID") + ' <small>/orang</small></span></td><td><a href="/booking?schedule=' + s.id + '" class="btn btn-primary btn-sm">Pesan</a></td></tr>').join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Additional Info -->
+      <div style="margin-top: 3rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;" class="animate-on-scroll">
+        <div class="card" style="border-top: 4px solid var(--gold-500);">
+          <div class="card-body" style="text-align: center;">
+            <span style="font-size: 2.2rem;">🏠</span>
+            <h3 style="font-size: 0.95rem; margin: 0.5rem 0; color: var(--navy-800);">Door to Door</h3>
+            <p style="font-size: 0.8rem; color: var(--gray-600);">Dijemput di rumah & diantar sampai tujuan</p>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid var(--gold-500);">
+          <div class="card-body" style="text-align: center;">
+            <span style="font-size: 2.2rem;">📍</span>
+            <h3 style="font-size: 0.95rem; margin: 0.5rem 0; color: var(--navy-800);">Wilayah Kabupaten</h3>
+            <p style="font-size: 0.8rem; color: var(--gray-600);">Luar kota (Kab. Mojokerto / Kab. Malang) +Rp20.000/org</p>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid var(--gold-500);">
+          <div class="card-body" style="text-align: center;">
+            <span style="font-size: 2.2rem;">💳</span>
+            <h3 style="font-size: 0.95rem; margin: 0.5rem 0; color: var(--navy-800);">Bayar di Tempat</h3>
+            <p style="font-size: 0.8rem; color: var(--gray-600);">Pembayaran dilakukan saat keberangkatan</p>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid var(--gold-500);">
+          <div class="card-body" style="text-align: center;">
+            <span style="font-size: 2.2rem;">📱</span>
+            <h3 style="font-size: 0.95rem; margin: 0.5rem 0; color: var(--navy-800);">Booking Cepat</h3>
+            <p style="font-size: 0.8rem; color: var(--gray-600);">Pesan via web atau WhatsApp 24 Jam</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+` }) %>

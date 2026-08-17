@@ -1,0 +1,106 @@
+<% var title = 'Kontak'; %>
+<%- include('layout', { body: `
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Beranda</a>
+        <span>/</span>
+        <span>Kontak</span>
+      </div>
+      <h1>Hubungi Kami</h1>
+      <p>Kami siap membantu Anda kapan saja</p>
+    </div>
+  </div>
+
+  <section class="section section-dark">
+    <div class="container">
+      <div class="contact-grid">
+        <!-- Contact Info -->
+        <div>
+          <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Kami Siap <span style="color: var(--gold-500);">Melayani</span></h2>
+          <p style="color: rgba(255,255,255,0.6); margin-bottom: 2rem; line-height: 1.7;">Jangan ragu untuk menghubungi kami. Tim DH Trans siap membantu Anda dengan senang hati.</p>
+
+          <div style="display: grid; gap: 1rem;">
+            <a href="https://wa.me/6289671969214" target="_blank" rel="noopener" class="contact-info-card">
+              <div class="contact-info-icon">📱</div>
+              <div>
+                <h4>Customer Service (Booking)</h4>
+                <p>0896-7196-9214</p>
+                <p style="color: var(--gold-500); font-size: 0.8rem; margin-top: 4px;">Chat CS 24 Jam →</p>
+              </div>
+            </a>
+            <div class="contact-info-card">
+              <div class="contact-info-icon">👨‍✈️</div>
+              <div>
+                <h4>Kontak Driver Bertugas</h4>
+                <p style="font-size: 0.88rem; margin-top: 2px;">• <strong>Mas Zidan (Driver 1)</strong>: <a href="https://wa.me/6281918401858" target="_blank" style="color: var(--gold-400);">0819-1840-1858</a></p>
+                <p style="font-size: 0.88rem; margin-top: 2px;">• <strong>Mas Hervin (Driver 2)</strong>: <a href="https://wa.me/628972681444" target="_blank" style="color: var(--gold-400);">0897-2681-444</a></p>
+              </div>
+            </div>
+            <a href="https://www.instagram.com/dhtrans.id?igsh=MTJkZ3gzcXp5NGkxaQ%3D%3D&utm_source=qr" target="_blank" rel="noopener" class="contact-info-card" style="background: linear-gradient(135deg, rgba(193, 53, 132, 0.2), rgba(225, 48, 108, 0.1)); border-color: rgba(225, 48, 108, 0.4);">
+              <div class="contact-info-icon">📸</div>
+              <div>
+                <h4>Instagram Resmi</h4>
+                <p style="color: white; font-weight: 700;">@dhtrans.id</p>
+                <p style="color: #ff758c; font-size: 0.8rem; margin-top: 4px;">Buka Instagram →</p>
+              </div>
+            </a>
+            <div class="contact-info-card">
+              <div class="contact-info-icon">🛣️</div>
+              <div>
+                <h4>Rute & Layanan</h4>
+                <p>Mojokerto ⇄ Malang (Reguler Door-to-Door & Carter Privat)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div>
+          <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-xl); padding: 2rem;">
+            <h3 style="color: var(--white); font-size: 1.3rem; margin-bottom: 1.5rem;">Kirim Pesan</h3>
+            
+            ${success ? '<div class="success-message">✅ Pesan Anda telah berhasil dikirim. Kami akan segera merespons!</div>' : ''}
+
+            <form method="POST" action="/kontak">
+              <div class="form-group dark">
+                <label>Nama Lengkap *</label>
+                <input type="text" class="form-control dark" name="name" placeholder="Masukkan nama Anda" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group dark">
+                  <label>Email</label>
+                  <input type="email" class="form-control dark" name="email" placeholder="email@contoh.com">
+                </div>
+                <div class="form-group dark">
+                  <label>No. Telepon</label>
+                  <input type="tel" class="form-control dark" name="phone" placeholder="08xxxxxxxxxx">
+                </div>
+              </div>
+              <div class="form-group dark">
+                <label>Subjek</label>
+                <select class="form-control dark" name="subject">
+                  <option value="">-- Pilih Subjek --</option>
+                  <option value="Pertanyaan Umum">Pertanyaan Umum</option>
+                  <option value="Booking Travel">Booking Travel</option>
+                  <option value="Komplain">Komplain</option>
+                  <option value="Saran">Saran</option>
+                  <option value="Kerjasama">Kerjasama</option>
+                </select>
+              </div>
+              <div class="form-group dark">
+                <label>Pesan *</label>
+                <textarea class="form-control dark" name="message" rows="4" placeholder="Tulis pesan Anda..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full btn-lg">
+                Kirim Pesan →
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+` }) %>

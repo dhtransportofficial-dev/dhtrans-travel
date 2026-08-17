@@ -1,0 +1,119 @@
+<% var title = 'Cek Status Booking'; %>
+<%- include('layout', { body: `
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Beranda</a>
+        <span>/</span>
+        <span>Cek Booking</span>
+      </div>
+      <h1>Cek Status Pemesanan</h1>
+      <p>Masukkan kode booking Anda untuk melihat status dan detail perjalanan</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="check-booking-card animate-on-scroll">
+        <form method="POST" action="/check-booking" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 250px;">
+            <input type="text" class="form-control" name="booking_code" placeholder="Contoh: DH-20260818-001" required style="font-size: 1.05rem; padding: 14px 18px; text-transform: uppercase;">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="padding: 14px 28px;">
+            🔍 Cari Pesanan
+          </button>
+        </form>
+
+        ${error ? '<div class="error-message" style="margin-top: 1.5rem;">⚠️ ' + error + '</div>' : ''}
+
+        ${booking ? `
+          <div class="booking-result animate-on-scroll">
+            <div class="booking-result-header">
+              <div>
+                <small style="color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Kode Booking</small>
+                <div class="booking-code">${booking.booking_code}</div>
+              </div>
+              <div>
+                <span class="status-badge status-${booking.status}">
+                  ${booking.status === 'pending' ? '⏳ Menunggu Konfirmasi' : ''}
+                  ${booking.status === 'confirmed' ? '✅ Terkonfirmasi' : ''}
+                  ${booking.status === 'completed' ? '🏁 Selesai' : ''}
+                  ${booking.status === 'cancelled' ? '❌ Dibatalkan' : ''}
+                </span>
+              </div>
+            </div>
+
+            <div class="booking-detail-grid">
+              <div class="booking-detail-item">
+                <div class="detail-label">Rute Perjalanan</div>
+                <div class="detail-value" style="font-weight: 700; color: var(--navy-800);">${booking.origin} → ${booking.destination}</div>
+              </div>
+              <div class="booking-detail-item">
+                <div class="detail-label">Tanggal Berangkat</div>
+                <div class="detail-value">${booking.travel_date}</div>
+              </div>
+              <div class="booking-detail-item">
+                <div class="detail-label">Jam Keberangkatan</div>
+                <div class="detail-value">${booking.departure_time} WIB (Via ${booking.via})</div>
+              </div>
+              <div class="booking-detail-item">
+                <div class="detail-label">Jumlah Penumpang</div>
+                <div class="detail-value">${booking.passenger_count} Orang</div>
+              </div>
+              <div class="booking-detail-item">
+                <div class="detail-label">Nama Pemesan</div>
+                <div class="detail-value">${booking.passenger_name}</div>
+              </div>
+              <div class="booking-detail-item">
+                <div class="detail-label">No. Telepon / WA</div>
+                <div class="detail-value">${booking.passenger_phone}</div>
+              </div>
+              <div class="booking-detail-item" style="grid-column: 1 / -1;">
+                <div class="detail-label">Titik Jemput (Alamat)</div>
+                <div class="detail-value">
+                  ${booking.pickup_address}
+                  <span class="status-badge ${booking.pickup_zone === 'kabupaten' ? 'status-pending' : 'status-confirmed'}" style="font-size: 0.75rem; margin-left: 8px;">
+                    ${booking.pickup_zone === 'kabupaten' ? '🏡 Wilayah Kabupaten (+Rp20rb/org)' : '🏙️ Dalam Kota'}
+                  </span>
+                </div>
+              </div>
+              <div class="booking-detail-item" style="grid-column: 1 / -1;">
+                <div class="detail-label">Alamat Tujuan</div>
+                <div class="detail-value">
+                  ${booking.dropoff_address}
+                  <span class="status-badge ${booking.dropoff_zone === 'kabupaten' ? 'status-pending' : 'status-confirmed'}" style="font-size: 0.75rem; margin-left: 8px;">
+                    ${booking.dropoff_zone === 'kabupaten' ? '🏡 Wilayah Kabupaten (+Rp20rb/org)' : '🏙️ Dalam Kota'}
+                  </span>
+                </div>
+              </div>
+              ${booking.extra_fee && booking.extra_fee > 0 ? `
+              <div class="booking-detail-item" style="grid-column: 1 / -1; background: #fff8e1; padding: 8px 12px; border-radius: var(--radius-sm);">
+                <div class="detail-label" style="color: #b78103;">Tambahan Luar Kota/Kabupaten</div>
+                <div class="detail-value" style="color: #b78103; font-weight: 600;">+Rp${booking.extra_fee.toLocaleString('id-ID')}</div>
+              </div>
+              ` : ''}
+              ${booking.notes ? `
+              <div class="booking-detail-item" style="grid-column: 1 / -1;">
+                <div class="detail-label">Catatan Tambahan</div>
+                <div class="detail-value">${booking.notes}</div>
+              </div>
+              ` : ''}
+              <div class="booking-detail-item" style="grid-column: 1 / -1; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--gray-300); display: flex; justify-content: space-between; align-items: center;">
+                <div class="detail-label" style="font-size: 1rem;">Total Pembayaran</div>
+                <div class="price-tag" style="font-size: 1.5rem;">Rp${booking.total_price.toLocaleString('id-ID')}</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end; flex-wrap: wrap;">
+              <a href="https://wa.me/6289671969214?text=Halo%20DH%20Trans,%20saya%20ingin%20menanyakan%20status%20booking%20kode%20${booking.booking_code}" class="btn btn-whatsapp" target="_blank" rel="noopener">
+                💬 Hubungi Admin via WhatsApp
+              </a>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  </section>
+
+` }) %>

@@ -1,0 +1,71 @@
+<% var title = 'Kelola Testimoni'; var pageTitle = 'Testimoni Pelanggan'; %>
+<%- include('layout', { body: `
+
+  <div class="admin-table-card">
+    <div class="admin-table-header">
+      <h2>Semua Testimoni (${testimonials.length})</h2>
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Nama Pelanggan</th>
+          <th>Rute</th>
+          <th>Rating</th>
+          <th>Ulasan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${testimonials.length === 0 ? '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-500);">Belum ada ulasan</td></tr>' : ''}
+        ${testimonials.map(t => `
+          <tr>
+            <td style="font-size: 0.8rem; color: var(--gray-500);">${new Date(t.created_at).toLocaleDateString('id-ID')}</td>
+            <td><strong>${t.name}</strong></td>
+            <td>${t.route_text || '-'}</td>
+            <td><span style="color: var(--gold-500); font-weight: bold;">★ ${t.rating}/5</span></td>
+            <td style="max-width: 280px; font-size: 0.85rem; font-style: italic;">"${t.comment}"</td>
+            <td>
+              <span class="status-badge ${t.is_approved ? 'status-completed' : 'status-pending'}">
+                ${t.is_approved ? 'Ditampilkan' : 'Pending'}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button class="btn-approve" onclick="toggleTestimonial(${t.id})">
+                  ${t.is_approved ? 'Sembunyikan' : 'Tampilkan'}
+                </button>
+                <button class="btn-delete" onclick="deleteTestimonial(${t.id})">Hapus</button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function toggleTestimonial(id) {
+      try {
+        const res = await fetch('/admin/testimonials/' + id + '/approve', { method: 'POST' });
+        if (res.ok) location.reload();
+      } catch (err) {
+        alert('Gagal mengubah status testimoni');
+      }
+    }
+
+    async function deleteTestimonial(id) {
+      if (confirm('Hapus ulasan ini?')) {
+        try {
+          const res = await fetch('/admin/testimonials/' + id + '/delete', { method: 'POST' });
+          if (res.ok) location.reload();
+        } catch (err) {
+          alert('Gagal menghapus ulasan');
+        }
+      }
+    }
+  </script>
+
+` }) %>

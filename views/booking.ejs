@@ -1,0 +1,436 @@
+<% var title = 'Pesan Tiket'; %>
+<%- include('layout', { body: `
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Beranda</a>
+        <span>/</span>
+        <span>Pesan Tiket</span>
+      </div>
+      <h1>Pesan Tiket Travel Reguler</h1>
+      <p>Pesan kursi travel door-to-door Mojokerto ⇄ Malang dengan ketersediaan kursi real-time</p>
+    </div>
+  </div>
+
+  <section class="booking-section">
+    <div class="container">
+      <!-- Area Coverage Note & Carter Switch -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+        <div style="background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(10,22,40,0.05)); border: 1px solid rgba(212,168,67,0.4); border-radius: var(--radius-lg); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+          <span style="font-size: 1.8rem;">ℹ️</span>
+          <div style="font-size: 0.88rem; color: var(--navy-800);">
+            <strong>Jangkauan Wilayah:</strong> Penjemputan / pengantaran dalam kota (Mojokerto Kota & Malang Kota) berlaku tarif standar. Untuk wilayah <strong>Kabupaten Mojokerto / Kabupaten Malang</strong> dikenakan biaya tambahan <strong>+Rp20.000 / orang</strong>.
+          </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--navy-800), var(--navy-700)); color: white; border-radius: var(--radius-lg); padding: 1rem 1.2rem; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+          <div style="font-size: 0.85rem; color: var(--gold-400); font-weight: 600;">Ingin 1 Mobil Khusus / Rombongan?</div>
+          <a href="/carter" style="display: inline-block; margin-top: 6px; font-size: 0.82rem; color: white; background: var(--gold-500); padding: 6px 12px; border-radius: var(--radius-full); font-weight: 700;">
+            Sewa Carteran Privat →
+          </a>
+        </div>
+      </div>
+
+      <div class="booking-grid">
+        <div class="booking-form-card">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Form Pemesanan Tiket
+          </h2>
+
+          <form id="bookingForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="travel_date">Tanggal Perjalanan *</label>
+                <input type="date" class="form-control" id="travel_date" name="travel_date" required min="${new Date().toISOString().split('T')[0]}" value="${new Date().toISOString().split('T')[0]}">
+              </div>
+              <div class="form-group">
+                <label for="passenger_count">Jumlah Kursi / Penumpang *</label>
+                <select class="form-control" id="passenger_count" name="passenger_count" required>
+                  <option value="1">1 Orang</option>
+                  <option value="2">2 Orang</option>
+                  <option value="3">3 Orang</option>
+                  <option value="4">4 Orang</option>
+                  <option value="5">5 Orang</option>
+                  <option value="6">6 Orang (Full Mobil)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="schedule_id">Pilih Jadwal & Rute Keberangkatan *</label>
+              <select class="form-control" id="schedule_id" name="schedule_id" required>
+                <option value="">-- Pilih Jadwal --</option>
+                ${schedules.map(s => '<option value="' + s.id + '" data-price="' + s.price + '" data-origin="' + s.origin + '" data-destination="' + s.destination + '" data-time="' + s.departure_time + '" data-via="' + s.via + '" ' + (selectedSchedule == s.id ? 'selected' : '') + '>' + s.origin + ' → ' + s.destination + ' | ' + s.departure_time + ' WIB | Via ' + s.via + ' | Rp' + s.price.toLocaleString("id-ID") + '/org</option>').join('')}
+              </select>
+
+              <!-- Live Seat Status Indicator -->
+              <div id="seatStatusIndicator" style="margin-top: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; font-weight: 600;">
+                <span id="seatBadge" class="status-badge status-confirmed">🟢 Memuat status kursi...</span>
+                <span id="seatDesc" style="color: var(--gray-600); font-size: 0.8rem;">(Kapasitas 6 kursi/mobil)</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="passenger_name">Nama Lengkap *</label>
+                <input type="text" class="form-control" id="passenger_name" name="passenger_name" placeholder="Masukkan nama lengkap" required>
+              </div>
+              <div class="form-group">
+                <label for="passenger_phone">No. Telepon/WhatsApp *</label>
+                <input type="tel" class="form-control" id="passenger_phone" name="passenger_phone" placeholder="08xxxxxxxxxx" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="passenger_email">Email (opsional)</label>
+              <input type="email" class="form-control" id="passenger_email" name="passenger_email" placeholder="email@contoh.com">
+            </div>
+
+            <!-- Penjemputan Section -->
+            <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem;">
+              <div class="form-group" style="margin-bottom: 0.8rem;">
+                <label style="font-weight: 700; color: var(--navy-800); display: flex; align-items: center; gap: 6px;">
+                  📍 Wilayah Penjemputan (Titik Jemput) *
+                </label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 6px;">
+                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                    <input type="radio" name="pickup_zone" value="kota" checked onchange="updateSummary()">
+                    <span>🏙️ <strong>Dalam Kota</strong> (Tarif Normal)</span>
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                    <input type="radio" name="pickup_zone" value="kabupaten" onchange="updateSummary()">
+                    <span>🏡 <strong>Wilayah Kabupaten</strong> (+Rp20rb/org)</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="pickup_address">Alamat Lengkap Penjemputan *</label>
+                <textarea class="form-control" id="pickup_address" name="pickup_address" rows="2" placeholder="Nama jalan, nomor rumah, RT/RW, kelurahan/desa, kecamatan" required></textarea>
+                <p class="form-note">Contoh: Jl. Raya Pacet No. 12, Desa Pandan, Kec. Pacet, Kab. Mojokerto</p>
+              </div>
+            </div>
+
+            <!-- Pengantaran Section -->
+            <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem;">
+              <div class="form-group" style="margin-bottom: 0.8rem;">
+                <label style="font-weight: 700; color: var(--navy-800); display: flex; align-items: center; gap: 6px;">
+                  🏁 Wilayah Pengantaran (Titik Tujuan) *
+                </label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 6px;">
+                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                    <input type="radio" name="dropoff_zone" value="kota" checked onchange="updateSummary()">
+                    <span>🏙️ <strong>Dalam Kota</strong> (Tarif Normal)</span>
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                    <input type="radio" name="dropoff_zone" value="kabupaten" onchange="updateSummary()">
+                    <span>🏡 <strong>Wilayah Kabupaten</strong> (+Rp20rb/org)</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="dropoff_address">Alamat Lengkap Tujuan *</label>
+                <textarea class="form-control" id="dropoff_address" name="dropoff_address" rows="2" placeholder="Nama jalan, nomor rumah, RT/RW, kelurahan/desa, kecamatan" required></textarea>
+                <p class="form-note">Contoh: Jl. Panji Suroso No. 45, Kec. Kepanjen, Kab. Malang</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Catatan Tambahan (opsional)</label>
+              <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Contoh: Bawa koper besar, patokan depan masjid, butuh kursi tengah, dll."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBooking">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Konfirmasi Pemesanan
+            </button>
+          </form>
+        </div>
+
+        <!-- Sidebar Summary -->
+        <div class="booking-sidebar">
+          <div class="booking-summary">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Ringkasan Pesanan
+            </h3>
+            <div class="summary-row">
+              <span class="label">Rute</span>
+              <span class="value" id="summaryRoute">-</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Jam & Via</span>
+              <span class="value" id="summaryTimeVia">-</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Tanggal</span>
+              <span class="value" id="summaryDate">-</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Jumlah Kursi</span>
+              <span class="value" id="summaryPassengers">1 orang</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Status Kursi</span>
+              <span class="value" id="summarySeatAvail" style="color: #2ecc71;">Tersedia</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Tarif Dasar</span>
+              <span class="value" id="summaryBasePrice">Rp0</span>
+            </div>
+            
+            <div class="summary-row" id="pickupSurchargeRow" style="display: none; color: var(--gold-300);">
+              <span class="label" style="color: var(--gold-300);">+ Jemput Kab. (+20rb/org)</span>
+              <span class="value" id="summaryPickupSurcharge">Rp0</span>
+            </div>
+
+            <div class="summary-row" id="dropoffSurchargeRow" style="display: none; color: var(--gold-300);">
+              <span class="label" style="color: var(--gold-300);">+ Antar Kab. (+20rb/org)</span>
+              <span class="value" id="summaryDropoffSurcharge">Rp0</span>
+            </div>
+
+            <div class="summary-total">
+              <p class="total-label">Total Pembayaran</p>
+              <p class="total-price" id="summaryTotal">Rp0</p>
+            </div>
+          </div>
+
+          <!-- High Contrast Driver Contact Card -->
+          <div class="driver-contact-card">
+            <h4>
+              <span>👨‍✈️</span> Kontak Driver Bertugas
+            </h4>
+            <div class="driver-list">
+              <div class="driver-item">
+                <div class="driver-info">
+                  <span class="driver-name">Mas Zidan (Driver 1)</span>
+                  <span class="driver-phone">0819-1840-1858</span>
+                </div>
+                <a href="https://wa.me/6281918401858?text=Halo%20Mas%20Zidan%20(Driver%201%20DH%20Trans),%20saya%20mau%20tanya%20info%20travel." target="_blank" class="btn-wa-compact">
+                  💬 Chat WA
+                </a>
+              </div>
+
+              <div class="driver-item">
+                <div class="driver-info">
+                  <span class="driver-name">Mas Hervin (Driver 2)</span>
+                  <span class="driver-phone">0897-2681-444</span>
+                </div>
+                <a href="https://wa.me/628972681444?text=Halo%20Mas%20Hervin%20(Driver%202%20DH%20Trans),%20saya%20mau%20tanya%20info%20travel." target="_blank" class="btn-wa-compact">
+                  💬 Chat WA
+                </a>
+              </div>
+
+              <div class="driver-item" style="background: #eff6ff; border-color: #bfdbfe;">
+                <div class="driver-info">
+                  <span class="driver-name" style="color: #1e40af;">Customer Service (24 Jam)</span>
+                  <span class="driver-phone">0896-7196-9214</span>
+                </div>
+                <a href="https://wa.me/6289671969214?text=Halo%20CS%20DH%20Trans,%20saya%20ingin%20tanya%20pemesanan%20tiket." target="_blank" class="btn-wa-compact" style="background: #2563eb;">
+                  📱 Hubungi CS
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- High Contrast Official Instagram Card -->
+          <div class="instagram-card">
+            <div class="instagram-card-header">
+              <span class="instagram-handle">
+                📸 @dhtrans.id
+              </span>
+              <span class="instagram-badge">Official</span>
+            </div>
+            <p class="instagram-desc">
+              Dokumentasi perjalanan, info promo, jadwal terkini & armada DH Trans.
+            </p>
+            <a href="https://www.instagram.com/dhtrans.id?igsh=MTJkZ3gzcXp5NGkxaQ%3D%3D&utm_source=qr" target="_blank" rel="noopener" class="btn-ig-compact">
+              Kunjungi Instagram @dhtrans.id ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking Success Modal -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal-content">
+      <div class="modal-icon">✅</div>
+      <h2>Pemesanan Berhasil!</h2>
+      <p>Pesanan Anda telah tercatat di sistem DH Trans. Silakan klik tombol di bawah untuk konfirmasi ke WhatsApp kami.</p>
+      <div class="modal-booking-code">
+        <small style="color: #868e96;">Kode Booking Anda:</small><br>
+        <span id="modalBookingCode">-</span>
+      </div>
+      <div class="modal-actions">
+        <a href="#" id="modalWaLink" class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener">
+          💬 Konfirmasi via WhatsApp
+        </a>
+        <a href="#" id="modalTrackingLink" class="btn btn-secondary" style="background: var(--navy-800); color: white;">
+          📍 Lacak Live GPS Perjalanan
+        </a>
+        <button onclick="document.getElementById('bookingModal').classList.remove('active')" class="btn btn-secondary" style="background: #f1f3f5; color: #495057; border: 1px solid #dee2e6;">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const scheduleSelect = document.getElementById('schedule_id');
+    const passengerCount = document.getElementById('passenger_count');
+    const travelDate = document.getElementById('travel_date');
+    const submitBtn = document.getElementById('submitBooking');
+
+    function getSelectedRadioValue(name) {
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : 'kota';
+    }
+
+    async function checkSeatAvailability() {
+      const scheduleId = scheduleSelect.value;
+      const dateVal = travelDate.value;
+
+      if (!scheduleId || !dateVal) return;
+
+      try {
+        const res = await fetch('/api/seats?schedule_id=' + scheduleId + '&travel_date=' + dateVal);
+        const data = await res.json();
+
+        const badge = document.getElementById('seatBadge');
+        const desc = document.getElementById('seatDesc');
+        const summarySeat = document.getElementById('summarySeatAvail');
+        const count = parseInt(passengerCount.value || 1);
+
+        if (data.isFull || data.availableSeats <= 0) {
+          badge.className = 'status-badge status-cancelled';
+          badge.innerHTML = '🔴 FULL BOOKED (KURSI PENUH)';
+          desc.textContent = 'Jadwal ini sudah terisi penuh pada tanggal ' + dateVal;
+          summarySeat.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">PENUH</span>';
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '⛔ Kursi Penuh (Pilih Jadwal Lain)';
+        } else if (data.availableSeats < count) {
+          badge.className = 'status-badge status-pending';
+          badge.innerHTML = '⚠️ Tersisa ' + data.availableSeats + ' Kursi';
+          desc.textContent = 'Jumlah penumpang (' + count + ') melebihi sisa kursi (' + data.availableSeats + ')';
+          summarySeat.innerHTML = '<span style="color: #e67e22;">Tersisa ' + data.availableSeats + ' Kursi</span>';
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '⚠️ Sisa Kursi Tidak Cukup';
+        } else {
+          badge.className = 'status-badge status-completed';
+          badge.innerHTML = '🟢 Tersedia ' + data.availableSeats + ' Kursi';
+          desc.textContent = 'Kapasitas maksimal 6 kursi per mobil';
+          summarySeat.innerHTML = '<span style="color: #2ecc71;">Tersedia (' + data.availableSeats + ' sisa)</span>';
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Konfirmasi Pemesanan';
+        }
+      } catch (err) {
+        console.error('Seat check error:', err);
+      }
+    }
+
+    function updateSummary() {
+      const selected = scheduleSelect.options[scheduleSelect.selectedIndex];
+      const count = parseInt(passengerCount.value || 1);
+      const pickupZone = getSelectedRadioValue('pickup_zone');
+      const dropoffZone = getSelectedRadioValue('dropoff_zone');
+
+      if (selected && selected.value) {
+        document.getElementById('summaryRoute').textContent = selected.dataset.origin + ' → ' + selected.dataset.destination;
+        document.getElementById('summaryTimeVia').textContent = selected.dataset.time + ' WIB (Via ' + selected.dataset.via + ')';
+        
+        const pricePerPax = parseInt(selected.dataset.price);
+        const baseTotal = pricePerPax * count;
+        document.getElementById('summaryBasePrice').textContent = 'Rp' + baseTotal.toLocaleString('id-ID') + ' (' + count + ' org)';
+        document.getElementById('summaryPassengers').textContent = count + ' orang';
+
+        const pickupExtra = pickupZone === 'kabupaten' ? 20000 * count : 0;
+        const dropoffExtra = dropoffZone === 'kabupaten' ? 20000 * count : 0;
+
+        const pickupRow = document.getElementById('pickupSurchargeRow');
+        if (pickupExtra > 0) {
+          pickupRow.style.display = 'flex';
+          document.getElementById('summaryPickupSurcharge').textContent = '+Rp' + pickupExtra.toLocaleString('id-ID');
+        } else {
+          pickupRow.style.display = 'none';
+        }
+
+        const dropoffRow = document.getElementById('dropoffSurchargeRow');
+        if (dropoffExtra > 0) {
+          dropoffRow.style.display = 'flex';
+          document.getElementById('summaryDropoffSurcharge').textContent = '+Rp' + dropoffExtra.toLocaleString('id-ID');
+        } else {
+          dropoffRow.style.display = 'none';
+        }
+
+        const grandTotal = baseTotal + pickupExtra + dropoffExtra;
+        document.getElementById('summaryTotal').textContent = 'Rp' + grandTotal.toLocaleString('id-ID');
+      }
+      
+      const dateVal = travelDate.value;
+      if (dateVal) {
+        const d = new Date(dateVal);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('summaryDate').textContent = d.toLocaleDateString('id-ID', options);
+      }
+
+      checkSeatAvailability();
+    }
+
+    scheduleSelect.addEventListener('change', updateSummary);
+    passengerCount.addEventListener('change', updateSummary);
+    travelDate.addEventListener('change', updateSummary);
+    
+    // Trigger on load
+    updateSummary();
+
+    // Form submit
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '⏳ Memproses Pesanan...';
+
+      const formData = {
+        schedule_id: document.getElementById('schedule_id').value,
+        travel_date: document.getElementById('travel_date').value,
+        passenger_name: document.getElementById('passenger_name').value,
+        passenger_phone: document.getElementById('passenger_phone').value,
+        passenger_email: document.getElementById('passenger_email').value,
+        passenger_count: document.getElementById('passenger_count').value,
+        pickup_zone: getSelectedRadioValue('pickup_zone'),
+        pickup_address: document.getElementById('pickup_address').value,
+        dropoff_zone: getSelectedRadioValue('dropoff_zone'),
+        dropoff_address: document.getElementById('dropoff_address').value,
+        notes: document.getElementById('notes').value,
+      };
+
+      try {
+        const res = await fetch('/booking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('modalBookingCode').textContent = data.bookingCode;
+          document.getElementById('modalWaLink').href = data.waLink;
+          document.getElementById('modalTrackingLink').href = '/tracking?code=' + data.bookingCode;
+          document.getElementById('bookingModal').classList.add('active');
+          document.getElementById('bookingForm').reset();
+          updateSummary();
+        } else {
+          alert('Gagal Booking: ' + (data.error || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Konfirmasi Pemesanan';
+    });
+  </script>
+
+` }) %>

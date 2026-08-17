@@ -1,0 +1,62 @@
+<% var title = 'Dashboard Admin'; var pageTitle = 'Dashboard Overview'; %>
+<%- include('layout', { body: `
+
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card gold">
+      <div class="stat-icon gold">💰</div>
+      <div class="stat-value">Rp${(stats.totalRevenue || 0).toLocaleString('id-ID')}</div>
+      <div class="stat-label">Total Pendapatan Terkonfirmasi</div>
+    </div>
+    <div class="stat-card navy">
+      <div class="stat-icon navy">📋</div>
+      <div class="stat-value">${stats.totalBookings || 0}</div>
+      <div class="stat-label">Total Semua Booking</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon blue">⏳</div>
+      <div class="stat-value">${stats.pendingBookings || 0}</div>
+      <div class="stat-label">Menunggu Konfirmasi</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon green">✅</div>
+      <div class="stat-value">${stats.confirmedBookings || 0}</div>
+      <div class="stat-label">Booking Terkonfirmasi</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions & Alerts -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Banner -->
+    <div class="card" style="background: linear-gradient(135deg, var(--navy-800), var(--navy-700)); color: white; padding: 2rem;">
+      <h2 style="font-size: 1.4rem; margin-bottom: 0.5rem; color: white;">Selamat Datang di Admin Panel DH Trans!</h2>
+      <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">
+        Kelola jadwal perjalanan, verifikasi booking dari pelanggan, dan atur layanan travel Mojokerto ⇄ Malang dengan mudah.
+      </p>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="/admin/bookings" class="btn btn-primary btn-sm">Kelola Pemesanan →</a>
+        <a href="/admin/schedules" class="btn btn-secondary btn-sm">Atur Jadwal & Harga</a>
+      </div>
+    </div>
+
+    <!-- Quick info card -->
+    <div class="card" style="padding: 1.5rem;">
+      <h3 style="font-size: 1.1rem; color: var(--navy-800); margin-bottom: 1rem;">Ringkasan Notifikasi</h3>
+      <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+        <a href="/admin/bookings?status=pending" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--gray-50); border-radius: var(--radius-md);">
+          <span style="font-size: 0.9rem; color: var(--gray-700);">Booking Pending</span>
+          <span class="status-badge status-pending">${stats.pendingBookings || 0}</span>
+        </a>
+        <a href="/admin/contacts" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--gray-50); border-radius: var(--radius-md);">
+          <span style="font-size: 0.9rem; color: var(--gray-700);">Pesan Belum Dibaca</span>
+          <span class="status-badge" style="background: var(--info-bg); color: #0c5460;">${stats.unreadContacts || 0}</span>
+        </a>
+        <a href="/admin/testimonials" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--gray-50); border-radius: var(--radius-md);">
+          <span style="font-size: 0.9rem; color: var(--gray-700);">Total Testimoni</span>
+          <span class="status-badge status-completed">4</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+` }) %>

@@ -1,0 +1,107 @@
+<% var title = 'Kelola Pemesanan'; var pageTitle = 'Daftar Pemesanan'; %>
+<%- include('layout', { body: `
+
+  <div class="admin-table-card">
+    <div class="admin-table-header">
+      <h2>Semua Pesanan (${bookings.length})</h2>
+      <div class="admin-filter">
+        <select onchange="window.location.href='/admin/bookings' + (this.value ? '?status=' + this.value : '')">
+          <option value="" ${currentStatus === '' ? 'selected' : ''}>Semua Status</option>
+          <option value="pending" ${currentStatus === 'pending' ? 'selected' : ''}>Pending</option>
+          <option value="confirmed" ${currentStatus === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+          <option value="completed" ${currentStatus === 'completed' ? 'selected' : ''}>Completed</option>
+          <option value="cancelled" ${currentStatus === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Pemesan & Kontak</th>
+            <th>Rute & Jam</th>
+            <th>Tanggal</th>
+            <th>Alamat Jemput / Tujuan</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bookings.length === 0 ? '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-500);">Belum ada data pemesanan</td></tr>' : ''}
+          ${bookings.map(b => `
+            <tr>
+              <td><strong style="color: var(--navy-800); font-family: var(--font-primary);">${b.booking_code}</strong></td>
+              <td>
+                <div style="font-weight: 600;">${b.passenger_name} (${b.passenger_count} org)</div>
+                <div style="font-size: 0.8rem; color: var(--gray-500);"><a href="https://wa.me/62${b.passenger_phone.replace(/^0/, '')}" target="_blank" style="color: #25D366; font-weight: 600;">📱 ${b.passenger_phone}</a></div>
+              </td>
+              <td>
+                <div style="font-weight: 600;">${b.origin} → ${b.destination}</div>
+                <div style="font-size: 0.8rem; color: var(--gray-500);">${b.departure_time} WIB (Via ${b.via})</div>
+              </td>
+              <td>${b.travel_date}</td>
+              <td style="max-width: 240px; font-size: 0.8rem;">
+                <div>
+                  <strong>Jemput:</strong> ${b.pickup_address}
+                  ${b.pickup_zone === 'kabupaten' ? '<span style="background: #fff3cd; color: #856404; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">Kabupaten (+20rb)</span>' : ''}
+                </div>
+                <div>
+                  <strong>Tujuan:</strong> ${b.dropoff_address}
+                  ${b.dropoff_zone === 'kabupaten' ? '<span style="background: #fff3cd; color: #856404; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">Kabupaten (+20rb)</span>' : ''}
+                </div>
+                ${b.extra_fee && b.extra_fee > 0 ? '<div style="color: #b8912e; font-size: 0.75rem;"><strong>Biaya Luar Kota:</strong> +Rp' + b.extra_fee.toLocaleString('id-ID') + '</div>' : ''}
+                ${b.notes ? '<div style="color: var(--gold-600);"><strong>Catatan:</strong> ' + b.notes + '</div>' : ''}
+              </td>
+              <td><strong style="color: var(--gold-600);">Rp${b.total_price.toLocaleString('id-ID')}</strong></td>
+              <td>
+                <select style="padding: 4px 8px; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600;" onchange="updateStatus(${b.id}, this.value)">
+                  <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                  <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>✅ Confirmed</option>
+                  <option value="completed" ${b.status === 'completed' ? 'selected' : ''}>🏁 Completed</option>
+                  <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+                </select>
+              </td>
+              <td>
+                <div class="actions">
+                  <button class="btn-delete" onclick="deleteBooking(${b.id})">Hapus</button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function updateStatus(id, status) {
+      try {
+        const res = await fetch('/admin/bookings/' + id + '/status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) {
+          alert('Status berhasil diperbarui!');
+        }
+      } catch (err) {
+        alert('Gagal memperbarui status');
+      }
+    }
+
+    async function deleteBooking(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus booking ini?')) {
+        try {
+          const res = await fetch('/admin/bookings/' + id + '/delete', { method: 'POST' });
+          if (res.ok) location.reload();
+        } catch (err) {
+          alert('Gagal menghapus');
+        }
+      }
+    }
+  </script>
+
+` }) %>

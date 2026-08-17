@@ -1,0 +1,128 @@
+<% var title = 'Kelola Carteran Mobil'; %>
+<%- include('layout', { body: `
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 1.8rem; color: var(--navy-900); margin-bottom: 4px;">Kelola Permintaan Carteran Mobil</h1>
+      <p style="color: var(--gray-600); font-size: 0.9rem;">Daftar permintaan sewa mobil privat. Anda dapat menentukan penawaran harga dan menghubungi customer via WhatsApp.</p>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 1.5rem; overflow-x: auto;">
+    <table class="table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+      <thead>
+        <tr style="border-bottom: 2px solid var(--gray-200); text-align: left;">
+          <th style="padding: 12px 8px;">Kode Carter</th>
+          <th style="padding: 12px 8px;">Pemesan & Kontak</th>
+          <th style="padding: 12px 8px;">Armada & Layanan</th>
+          <th style="padding: 12px 8px;">Tanggal & Rute</th>
+          <th style="padding: 12px 8px;">Harga Ditentukan</th>
+          <th style="padding: 12px 8px;">Status</th>
+          <th style="padding: 12px 8px; text-align: center;">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${charters.length === 0 ? '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-500);">Belum ada permintaan carteran masuk</td></tr>' : ''}
+        ${charters.map(c => `
+          <tr style="border-bottom: 1px solid var(--gray-200);">
+            <td style="padding: 12px 8px;">
+              <strong style="color: var(--navy-900); font-family: monospace; font-size: 0.95rem;">${c.charter_code}</strong><br>
+              <small style="color: var(--gray-500);">${new Date(c.created_at).toLocaleDateString('id-ID')}</small>
+            </td>
+            <td style="padding: 12px 8px;">
+              <strong>${c.customer_name}</strong><br>
+              <a href="https://wa.me/${c.customer_phone.replace(/^0/, '62').replace(/[^0-9]/g, '')}?text=Halo%20${encodeURIComponent(c.customer_name)},%20kami%20dari%20DH%20Trans%20terkait%20permintaan%20carter%20${c.charter_code}" target="_blank" style="color: #25D366; font-weight: 600; text-decoration: none;">
+                📱 ${c.customer_phone} ↗
+              </a>
+              ${c.customer_email ? `<br><small style="color: var(--gray-600);">${c.customer_email}</small>` : ''}
+            </td>
+            <td style="padding: 12px 8px;">
+              <span class="status-badge" style="background: var(--navy-800); color: white; margin-bottom: 4px; display: inline-block;">${c.car_choice}</span><br>
+              <small style="color: var(--gray-700); font-weight: 600;">${c.charter_type}</small>
+            </td>
+            <td style="padding: 12px 8px; max-width: 250px;">
+              <div style="margin-bottom: 4px;">📅 <strong>${c.start_date}</strong> ${c.end_date && c.end_date !== c.start_date ? 's/d ' + c.end_date : ''}</div>
+              <div style="font-size: 0.8rem; color: var(--gray-700);"><strong>Jemput:</strong> ${c.pickup_address}</div>
+              <div style="font-size: 0.8rem; color: var(--gray-700);"><strong>Tujuan:</strong> ${c.destination_address}</div>
+              ${c.notes ? `<div style="font-size: 0.75rem; color: var(--gray-500); margin-top: 2px;"><em>Note: ${c.notes}</em></div>` : ''}
+            </td>
+            <td style="padding: 12px 8px;">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <input type="number" id="price_${c.id}" value="${c.offered_price || ''}" placeholder="Rp harga admin" style="width: 130px; padding: 6px 8px; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 0.85rem; font-weight: 700;">
+                <button onclick="savePrice(${c.id})" class="btn btn-sm btn-primary" style="padding: 4px 8px; font-size: 0.75rem;">
+                  💾 Simpan Harga
+                </button>
+              </div>
+            </td>
+            <td style="padding: 12px 8px;">
+              <select onchange="updateStatus(${c.id}, this.value)" style="padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; border: 1px solid var(--gray-300); background: ${c.status === 'confirmed' ? '#e8f5e9' : c.status === 'completed' ? '#e3f2fd' : c.status === 'cancelled' ? '#ffebee' : '#fff8e1'};">
+                <option value="pending" ${c.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                <option value="offered" ${c.status === 'offered' ? 'selected' : ''}>💬 Diberi Harga</option>
+                <option value="confirmed" ${c.status === 'confirmed' ? 'selected' : ''}>✅ Dikonfirmasi</option>
+                <option value="completed" ${c.status === 'completed' ? 'selected' : ''}>🏁 Selesai</option>
+                <option value="cancelled" ${c.status === 'cancelled' ? 'selected' : ''}>❌ Batal</option>
+              </select>
+            </td>
+            <td style="padding: 12px 8px; text-align: center;">
+              <button onclick="deleteCharter(${c.id})" class="btn btn-sm btn-danger" style="padding: 4px 8px; font-size: 0.75rem; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                🗑️ Hapus
+              </button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function savePrice(id) {
+      const price = document.getElementById('price_' + id).value;
+      try {
+        const res = await fetch('/admin/charters/' + id + '/price', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ offered_price: price, status: 'offered' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Harga penawaran carteran berhasil disimpan!');
+          location.reload();
+        }
+      } catch (err) {
+        alert('Gagal menyimpan harga');
+      }
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        const res = await fetch('/admin/charters/' + id + '/status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (data.success) {
+          location.reload();
+        }
+      } catch (err) {
+        alert('Gagal update status');
+      }
+    }
+
+    async function deleteCharter(id) {
+      if (!confirm('Yakin ingin menghapus data carteran ini?')) return;
+      try {
+        const res = await fetch('/admin/charters/' + id + '/delete', {
+          method: 'POST'
+        });
+        const data = await res.json();
+        if (data.success) {
+          location.reload();
+        }
+      } catch (err) {
+        alert('Gagal menghapus carteran');
+      }
+    }
+  </script>
+
+` }) %>

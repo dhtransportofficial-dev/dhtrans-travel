@@ -1,0 +1,67 @@
+<% var title = 'Armada'; %>
+<%- include('layout', { body: `
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Beranda</a>
+        <span>/</span>
+        <span>Armada</span>
+      </div>
+      <h1>Armada Kami</h1>
+      <p>Kendaraan terawat dan nyaman untuk perjalanan Anda</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Kendaraan Premium</h2>
+        <p>Semua armada kami dilengkapi fasilitas terbaik untuk kenyamanan Anda</p>
+      </div>
+
+      <div class="fleet-grid">
+        ${fleet.map((f, i) => '<div class="fleet-card animate-on-scroll stagger-' + (i+1) + '"><div class="fleet-card-image"><img src="' + (f.image_url || '/images/fleet-veloz.png') + '" alt="' + f.name + '"><div class="fleet-card-badge">' + f.type + '</div></div><div class="fleet-card-body"><h3>' + f.name + '</h3><p class="fleet-type">' + f.type + ' • Kapasitas ' + f.capacity + ' penumpang</p><p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 1rem;">Kendaraan terawat dengan kondisi prima untuk memastikan perjalanan Anda aman dan nyaman.</p><div class="fleet-facilities">' + (f.facilities ? f.facilities.split(', ').map(fac => '<span class="fleet-facility"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>' + fac + '</span>').join('') : '') + '</div></div></div>').join('')}
+      </div>
+
+      <!-- Vehicle Standards -->
+      <div style="margin-top: 4rem;" class="animate-on-scroll">
+        <div class="section-header">
+          <h2>Standar Kendaraan Kami</h2>
+          <p>Setiap kendaraan harus memenuhi standar kualitas DH Trans</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+          <div class="card" style="text-align: center;">
+            <div class="card-body">
+              <span style="font-size: 2.5rem;">❄️</span>
+              <h3 style="font-size: 1rem; margin: 0.5rem 0; color: var(--navy-800);">AC Dingin</h3>
+              <p style="font-size: 0.85rem; color: var(--gray-600);">AC selalu dalam kondisi prima</p>
+            </div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div class="card-body">
+              <span style="font-size: 2.5rem;">🧹</span>
+              <h3 style="font-size: 1rem; margin: 0.5rem 0; color: var(--navy-800);">Bersih</h3>
+              <p style="font-size: 0.85rem; color: var(--gray-600);">Dibersihkan setiap hari</p>
+            </div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div class="card-body">
+              <span style="font-size: 2.5rem;">🔧</span>
+              <h3 style="font-size: 1rem; margin: 0.5rem 0; color: var(--navy-800);">Terawat</h3>
+              <p style="font-size: 0.85rem; color: var(--gray-600);">Service berkala rutin</p>
+            </div>
+          </div>
+          <div class="card" style="text-align: center;">
+            <div class="card-body">
+              <span style="font-size: 2.5rem;">🔌</span>
+              <h3 style="font-size: 1rem; margin: 0.5rem 0; color: var(--navy-800);">Charger HP</h3>
+              <p style="font-size: 0.85rem; color: var(--gray-600);">Tersedia port charging</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+` }) %>

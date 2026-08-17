@@ -1,0 +1,70 @@
+<% var title = 'Pesan Masuk'; var pageTitle = 'Pesan & Pertanyaan Masuk'; %>
+<%- include('layout', { body: `
+
+  <div class="admin-table-card">
+    <div class="admin-table-header">
+      <h2>Semua Pesan (${contacts.length})</h2>
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Nama & Kontak</th>
+          <th>Subjek</th>
+          <th>Pesan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${contacts.length === 0 ? '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--gray-500);">Belum ada pesan masuk</td></tr>' : ''}
+        ${contacts.map(c => `
+          <tr style="${!c.is_read ? 'background: rgba(212, 168, 67, 0.05); font-weight: 500;' : ''}">
+            <td style="font-size: 0.8rem; color: var(--gray-500);">${new Date(c.created_at).toLocaleDateString('id-ID')}</td>
+            <td>
+              <strong>${c.name}</strong>
+              <div style="font-size: 0.8rem; color: var(--gray-500);">${c.email || '-'} | ${c.phone || '-'}</div>
+            </td>
+            <td><strong>${c.subject || 'Umum'}</strong></td>
+            <td style="max-width: 300px; font-size: 0.85rem;">${c.message}</td>
+            <td>
+              <span class="status-badge ${c.is_read ? 'status-completed' : 'status-pending'}">
+                ${c.is_read ? 'Sudah Dibaca' : 'Baru'}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                ${!c.is_read ? `<button class="btn-approve" onclick="markRead(${c.id})">Tandai Dibaca</button>` : ''}
+                <button class="btn-delete" onclick="deleteContact(${c.id})">Hapus</button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function markRead(id) {
+      try {
+        const res = await fetch('/admin/contacts/' + id + '/read', { method: 'POST' });
+        if (res.ok) location.reload();
+      } catch (err) {
+        alert('Gagal menandai pesan');
+      }
+    }
+
+    async function deleteContact(id) {
+      if (confirm('Hapus pesan ini?')) {
+        try {
+          const res = await fetch('/admin/contacts/' + id + '/delete', { method: 'POST' });
+          if (res.ok) location.reload();
+        } catch (err) {
+          alert('Gagal menghapus');
+        }
+      }
+    }
+  </script>
+
+` }) %>

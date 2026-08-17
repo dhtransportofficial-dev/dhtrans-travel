@@ -1,0 +1,272 @@
+<% var title = 'Sewa & Carteran Mobil'; %>
+<%- include('layout', { body: `
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Beranda</a>
+        <span>/</span>
+        <span>Sewa & Carteran</span>
+      </div>
+      <h1>Layanan Carter & Sewa Mobil</h1>
+      <p>Layanan sewa mobil privat drop sekali jalan, pulang-pergi, atau harian ke berbagai tujuan</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <!-- Charter Price Policy Alert -->
+      <div style="background: linear-gradient(135deg, rgba(212,168,67,0.18), rgba(10,22,40,0.06)); border: 2px solid var(--gold-500); border-radius: var(--radius-lg); padding: 1.5rem 2rem; margin-bottom: 2.5rem; display: flex; align-items: flex-start; gap: 1.2rem;">
+        <span style="font-size: 2.5rem; line-height: 1;">🏷️</span>
+        <div>
+          <h3 style="color: var(--navy-900); font-size: 1.15rem; margin-bottom: 4px;">Ketentuan Tarif Carteran DH Trans</h3>
+          <p style="color: var(--navy-800); font-size: 0.95rem; line-height: 1.6;">
+            Tarif carteran bersifat <strong>fleksibel & tidak mengikat</strong>. Harga akan ditentukan langsung oleh admin DH Trans berdasarkan <strong>jarak tempuh (KM), rute perjalanan, durasi sewa, dan jenis armada yang dipilih</strong>. Setelah mengisi form di bawah, admin kami akan segera memberikan penawaran harga terbaik langsung ke WhatsApp Anda!
+          </p>
+        </div>
+      </div>
+
+      <div class="booking-grid">
+        <!-- Charter Form -->
+        <div class="booking-form-card">
+          <h2>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1 .4-1 1v7c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+            Formulir Permintaan Carteran
+          </h2>
+
+          <form id="charterForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="customer_name">Nama Pemesan *</label>
+                <input type="text" class="form-control" id="customer_name" name="customer_name" placeholder="Masukkan nama lengkap" required>
+              </div>
+              <div class="form-group">
+                <label for="customer_phone">No. WhatsApp Aktif *</label>
+                <input type="tel" class="form-control" id="customer_phone" name="customer_phone" placeholder="08xxxxxxxxxx" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="customer_email">Email (opsional)</label>
+              <input type="email" class="form-control" id="customer_email" name="customer_email" placeholder="email@contoh.com">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="car_choice">Pilihan Armada *</label>
+                <select class="form-control" id="car_choice" name="car_choice" required>
+                  <option value="Toyota All New Veloz (Hitam)">Toyota All New Veloz (Hitam) - MPV Premium</option>
+                  <option value="Toyota Calya (Putih)">Toyota Calya (Putih) - Compact MPV</option>
+                  <option value="Fleksibel / Sesuai Ketersediaan">Fleksibel / Rekomendasi Admin</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="charter_type">Tipe Layanan Carter *</label>
+                <select class="form-control" id="charter_type" name="charter_type" required>
+                  <option value="Drop Sekali Jalan (One Way)">🚗 Drop Sekali Jalan (One Way)</option>
+                  <option value="Pulang Pergi (PP / Day Trip)">🔄 Pulang Pergi (PP / Day Trip)</option>
+                  <option value="Carter Harian (Full Day + Driver)">🗓️ Carter Harian (Full Day + Driver)</option>
+                  <option value="Paket Wisata (Malang / Batu / Bromo)">⛰️ Paket Wisata Khusus</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="start_date">Tanggal Mulai / Berangkat *</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required min="${new Date().toISOString().split('T')[0]}">
+              </div>
+              <div class="form-group">
+                <label for="end_date">Tanggal Selesai (opsional jika 1 hari)</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" min="${new Date().toISOString().split('T')[0]}">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="pickup_address">Alamat Titik Jemput Lengkap *</label>
+              <textarea class="form-control" id="pickup_address" name="pickup_address" rows="2" placeholder="Nama jalan, nomor rumah, kelurahan, kecamatan, kota" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="destination_address">Alamat / Rencana Tujuan Perjalanan *</label>
+              <textarea class="form-control" id="destination_address" name="destination_address" rows="2" placeholder="Tujuan perjalanan, tempat wisata, hotel, atau rute yang ingin dikunjungi" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="purpose">Keperluan / Kategori Acara</label>
+              <input type="text" class="form-control" id="purpose" name="purpose" placeholder="Contoh: Rombongan Keluarga, Wisata Batu, Dinas Kantor, Drop Bandara">
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Catatan & Permintaan Tambahan (opsional)</label>
+              <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Contoh: Bawa barang banyak, jam penjemputan khusus (misal jam 03:00 subuh), dll."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitCharterBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Kirim Permintaan & Dapatkan Penawaran Harga
+            </button>
+          </form>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="booking-sidebar">
+          <div class="booking-summary" style="background: linear-gradient(135deg, var(--navy-900), var(--navy-800));">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Keunggulan Carter DH Trans
+            </h3>
+            
+            <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.88rem; color: rgba(255,255,255,0.85);">
+              <div style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--gold-500); font-size: 1.1rem;">✔</span>
+                <span><strong>Privat & Bebas</strong>: 1 Mobil full untuk Anda & rombongan tanpa digabung penumpang lain.</span>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--gold-500); font-size: 1.1rem;">✔</span>
+                <span><strong>Armada Bersih & Nyaman</strong>: Toyota All New Veloz (Hitam) & Toyota Calya (Putih).</span>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--gold-500); font-size: 1.1rem;">✔</span>
+                <span><strong>Driver Profesional</strong>: Ramah, hafal rute jalan tikus & tol, berkendara aman.</span>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--gold-500); font-size: 1.1rem;">✔</span>
+                <span><strong>Jadwal Fleksibel</strong>: Jam penjemputan bisa disesuaikan kebutuhan (pagi, siang, malam, atau subuh).</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+              <p style="font-size: 0.8rem; color: var(--gold-400); margin-bottom: 6px;">Kontak Cepat Tanya Harga:</p>
+              <a href="https://wa.me/6289671969214?text=Halo%20DH%20Trans,%20saya%20mau%20tanya%20harga%20carteran%20mobil." target="_blank" class="btn btn-whatsapp btn-sm btn-full">
+                💬 Chat WhatsApp Langsung
+              </a>
+            </div>
+          </div>
+
+          <!-- High Contrast Driver Contact Card -->
+          <div class="driver-contact-card">
+            <h4>
+              <span>👨‍✈️</span> Kontak Driver DH Trans
+            </h4>
+            <div class="driver-list">
+              <div class="driver-item">
+                <div class="driver-info">
+                  <span class="driver-name">Mas Zidan (Driver 1)</span>
+                  <span class="driver-phone">0819-1840-1858</span>
+                </div>
+                <a href="https://wa.me/6281918401858?text=Halo%20Mas%20Zidan%20(Driver%201%20DH%20Trans),%20saya%20mau%20tanya%20info%20carteran." target="_blank" class="btn-wa-compact">
+                  💬 Chat WA
+                </a>
+              </div>
+
+              <div class="driver-item">
+                <div class="driver-info">
+                  <span class="driver-name">Mas Hervin (Driver 2)</span>
+                  <span class="driver-phone">0897-2681-444</span>
+                </div>
+                <a href="https://wa.me/628972681444?text=Halo%20Mas%20Hervin%20(Driver%202%20DH%20Trans),%20saya%20mau%20tanya%20info%20carteran." target="_blank" class="btn-wa-compact">
+                  💬 Chat WA
+                </a>
+              </div>
+
+              <div class="driver-item" style="background: #eff6ff; border-color: #bfdbfe;">
+                <div class="driver-info">
+                  <span class="driver-name" style="color: #1e40af;">Customer Service (24 Jam)</span>
+                  <span class="driver-phone">0896-7196-9214</span>
+                </div>
+                <a href="https://wa.me/6289671969214?text=Halo%20CS%20DH%20Trans,%20saya%20ingin%20tanya%20harga%20carteran%20mobil." target="_blank" class="btn-wa-compact" style="background: #2563eb;">
+                  📱 Hubungi CS
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- High Contrast Official Instagram Card -->
+          <div class="instagram-card">
+            <div class="instagram-card-header">
+              <span class="instagram-handle">
+                📸 @dhtrans.id
+              </span>
+              <span class="instagram-badge">Official</span>
+            </div>
+            <p class="instagram-desc">
+              Dokumentasi perjalanan, info promo, jadwal terkini & armada DH Trans.
+            </p>
+            <a href="https://www.instagram.com/dhtrans.id?igsh=MTJkZ3gzcXp5NGkxaQ%3D%3D&utm_source=qr" target="_blank" rel="noopener" class="btn-ig-compact">
+              Kunjungi Instagram @dhtrans.id ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charter Success Modal -->
+  <div class="modal-overlay" id="charterModal">
+    <div class="modal-content">
+      <div class="modal-icon">✅</div>
+      <h2>Permintaan Carter Terkirim!</h2>
+      <p>Permintaan carteran Anda telah kami terima. Silakan konfirmasi via WhatsApp agar admin dapat memberikan penawaran harga terbaik.</p>
+      <div class="modal-booking-code">
+        <small style="color: #868e96;">Kode Carter Anda:</small><br>
+        <span id="modalCharterCode">-</span>
+      </div>
+      <div class="modal-actions">
+        <a href="#" id="modalCharterWaLink" class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener">
+          💬 Konfirmasi Penawaran via WhatsApp
+        </a>
+        <button onclick="document.getElementById('charterModal').classList.remove('active')" class="btn btn-secondary" style="background: #f1f3f5; color: #495057; border: 1px solid #dee2e6;">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('charterForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitCharterBtn');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Mengirim Permintaan...';
+
+      const formData = {
+        customer_name: document.getElementById('customer_name').value,
+        customer_phone: document.getElementById('customer_phone').value,
+        customer_email: document.getElementById('customer_email').value,
+        car_choice: document.getElementById('car_choice').value,
+        charter_type: document.getElementById('charter_type').value,
+        start_date: document.getElementById('start_date').value,
+        end_date: document.getElementById('end_date').value,
+        pickup_address: document.getElementById('pickup_address').value,
+        destination_address: document.getElementById('destination_address').value,
+        purpose: document.getElementById('purpose').value,
+        notes: document.getElementById('notes').value,
+      };
+
+      try {
+        const res = await fetch('/carter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById('modalCharterCode').textContent = data.charterCode;
+          document.getElementById('modalCharterWaLink').href = data.waLink;
+          document.getElementById('charterModal').classList.add('active');
+          document.getElementById('charterForm').reset();
+        } else {
+          alert('Error: ' + (data.error || 'Terjadi kesalahan'));
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Kirim Permintaan & Dapatkan Penawaran Harga';
+    });
+  </script>
+
+` }) %>

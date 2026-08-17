@@ -1,0 +1,68 @@
+<% var title = 'Kelola Rute'; var pageTitle = 'Master Rute Perjalanan'; %>
+<%- include('layout', { body: `
+
+  <!-- Add Route Form -->
+  <div class="admin-form-card">
+    <h3>+ Tambah Rute Baru</h3>
+    <form method="POST" action="/admin/routes">
+      <div class="admin-form-inline">
+        <div class="form-group">
+          <label>Kota Asal</label>
+          <input type="text" class="form-control" name="origin" placeholder="Contoh: Mojokerto" required>
+        </div>
+        <div class="form-group">
+          <label>Kota Tujuan</label>
+          <input type="text" class="form-control" name="destination" placeholder="Contoh: Malang" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="height: 48px;">Simpan Rute</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="admin-table-card">
+    <div class="admin-table-header">
+      <h2>Daftar Rute</h2>
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Kota Asal</th>
+          <th>Kota Tujuan</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${routes.map(r => `
+          <tr>
+            <td>${r.id}</td>
+            <td><strong>${r.origin}</strong></td>
+            <td><strong>${r.destination}</strong></td>
+            <td>
+              <span class="status-badge ${r.is_active ? 'status-completed' : 'status-cancelled'}">
+                ${r.is_active ? 'Aktif' : 'Nonaktif'}
+              </span>
+            </td>
+            <td>
+              <button class="btn-edit" onclick="toggleRoute(${r.id})">${r.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function toggleRoute(id) {
+      try {
+        const res = await fetch('/admin/routes/' + id + '/toggle', { method: 'POST' });
+        if (res.ok) location.reload();
+      } catch (err) {
+        alert('Gagal mengubah status rute');
+      }
+    }
+  </script>
+
+` }) %>

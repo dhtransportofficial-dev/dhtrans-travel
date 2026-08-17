@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>Admin Panel - DH Trans</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" type="image/png" href="/images/logo-icon.png">
+</head>
+<body style="background: var(--gray-50);">
+
+  <div class="admin-layout">
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar-logo" style="padding: 1.5rem 1rem; text-align: center;">
+        <img src="/images/logo-transparent.png" alt="DH Trans Logo" style="height: 36px; width: auto; object-fit: contain;">
+      </div>
+
+      <nav class="admin-nav">
+        <div class="admin-nav-label">Utama</div>
+        <a href="/admin" class="<%= page === 'admin-dashboard' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="/admin/bookings" class="<%= page === 'admin-bookings' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Pemesanan Reguler
+        </a>
+        <a href="/admin/charters" class="<%= page === 'admin-charters' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1 .4-1 1v7c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+          Sewa / Carteran
+        </a>
+
+        <div class="admin-nav-label">Master Data</div>
+        <a href="/admin/schedules" class="<%= page === 'admin-schedules' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Jadwal & Harga
+        </a>
+        <a href="/admin/routes" class="<%= page === 'admin-routes' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Rute
+        </a>
+
+        <div class="admin-nav-label">Interaksi</div>
+        <a href="/admin/contacts" class="<%= page === 'admin-contacts' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Pesan Masuk
+        </a>
+        <a href="/admin/testimonials" class="<%= page === 'admin-testimonials' ? 'active' : '' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Testimoni
+        </a>
+
+        <div class="admin-nav-label">Sistem</div>
+        <a href="/" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Lihat Website ↗
+        </a>
+        <a href="/admin/logout" style="color: #e74c3c;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Admin Main -->
+    <main class="admin-main">
+      <header class="admin-header">
+        <h1><%= typeof title !== 'undefined' ? title : 'Dashboard' %></h1>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 0.9rem; color: var(--gray-600);">
+            Halo, <strong><%= typeof adminUser !== 'undefined' && adminUser ? adminUser.full_name : 'Admin' %></strong>
+          </div>
+          <a href="/admin/logout" class="btn btn-sm btn-danger">Keluar</a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <%- body %>
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>

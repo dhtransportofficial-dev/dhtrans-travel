@@ -1,0 +1,232 @@
+<% var title = 'Live GPS Tracking'; %>
+<%- include('layout', { body: `
+
+  <!-- Leaflet CSS & JS for Interactive Live Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Beranda</a>
+        <span>/</span>
+        <span>Live GPS Tracking</span>
+      </div>
+      <h1>📍 Live GPS Tracking Perjalanan</h1>
+      <p>Pantau posisi armada travel Anda secara real-time dari penjemputan hingga tiba di tujuan</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <!-- Search Booking Code Card -->
+      <div class="card animate-on-scroll" style="padding: 1.5rem 2rem; margin-bottom: 2rem; border-top: 4px solid var(--gold-500);">
+        <form method="GET" action="/tracking" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 260px;">
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--navy-800); margin-bottom: 6px; display: block;">
+              Masukkan Kode Booking / Cek Simulasi:
+            </label>
+            <input type="text" class="form-control" name="code" value="${searchCode || (booking ? booking.booking_code : 'DH-20260820-101')}" placeholder="Contoh: DH-20260820-101" style="text-transform: uppercase; font-weight: 600; font-size: 1rem;">
+          </div>
+          <div style="align-self: flex-end;">
+            <button type="submit" class="btn btn-primary btn-lg" style="height: 50px;">
+              🛰️ Lacak Posisi Mobil
+            </button>
+          </div>
+        </form>
+        ${error ? '<div class="error-message" style="margin-top: 1rem;">⚠️ ' + error + '</div>' : ''}
+      </div>
+
+      <!-- Tracking Layout -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: flex-start;">
+        <!-- Left: Map & Live Telemetry -->
+        <div>
+          <div class="card" style="overflow: hidden; box-shadow: var(--shadow-lg); border-radius: var(--radius-lg);">
+            <!-- Map Status Bar -->
+            <div style="background: linear-gradient(135deg, var(--navy-900), var(--navy-800)); color: white; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #2ecc71; animation: pulse 1.5s infinite;"></span>
+                <strong style="font-size: 0.95rem;">GPS SIGNAL: ONLINE (LIVE REAL-TIME)</strong>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--gold-400);">
+                📡 Update Terakhir: <span id="lastUpdate">Baru saja</span>
+              </div>
+            </div>
+
+            <!-- Interactive Map Container -->
+            <div id="gpsMap" style="height: 480px; width: 100%; background: #e5e3df; z-index: 1;"></div>
+
+            <!-- Map Controls & Progress -->
+            <div style="padding: 1.2rem 1.5rem; background: white; border-top: 1px solid var(--gray-200);">
+              <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">
+                <span style="color: var(--navy-800);">🏁 Progres Perjalanan</span>
+                <span style="color: var(--gold-600);" id="progressText">65% (Sedang Melaju)</span>
+              </div>
+              <div style="width: 100%; height: 10px; background: var(--gray-200); border-radius: 6px; overflow: hidden;">
+                <div id="progressBar" style="width: 65%; height: 100%; background: linear-gradient(90deg, var(--navy-700), var(--gold-500)); border-radius: 6px; transition: width 0.5s ease;"></div>
+              </div>
+
+              <!-- Live Route Checkpoints -->
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 1rem; text-align: center; font-size: 0.75rem;">
+                <div style="padding: 6px; background: #e8f5e9; border-radius: 4px; color: #2e7d32; font-weight: 600;">
+                  ✓ Mojokerto Kota
+                </div>
+                <div style="padding: 6px; background: #e8f5e9; border-radius: 4px; color: #2e7d32; font-weight: 600;">
+                  ✓ Tol Gempol
+                </div>
+                <div style="padding: 6px; background: #fff8e1; border-radius: 4px; color: #f57f17; font-weight: 700; border: 1px solid #ffd54f;">
+                  🚗 Tol Pandaan (Sekarang)
+                </div>
+                <div style="padding: 6px; background: var(--gray-100); border-radius: 4px; color: var(--gray-600);">
+                  📍 Malang Kota (Tujuan)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Driver & Trip Status Panel -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Driver Info Card -->
+          <div class="card" style="padding: 1.5rem; border-top: 4px solid var(--navy-800);">
+            <h3 style="font-size: 1.1rem; color: var(--navy-800); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+              👨‍✈️ Driver Bertugas
+            </h3>
+
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem;">
+              <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-800), var(--gold-500)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700;">
+                ZD
+              </div>
+              <div>
+                <h4 style="font-size: 1.05rem; color: var(--navy-900);">Mas Zidan (Driver 1)</h4>
+                <p style="font-size: 0.8rem; color: var(--gray-600);">Driver Profesional Berpengalaman • DH Trans</p>
+                <div style="margin-top: 2px; font-size: 0.8rem; color: #2ecc71; font-weight: 600;">
+                  ★ 4.9 / 5.0 (200+ Trip Selesai)
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.2rem;">
+              <a href="https://wa.me/6281918401858?text=Halo%20Mas%20Zidan%20(Driver%201%20DH%20Trans),%20saya%20ingin%20tanya%20posisi%20jemputan." target="_blank" class="btn btn-whatsapp btn-sm btn-full">
+                💬 Hubungi Driver 1 (Zidan): 0819-1840-1858
+              </a>
+              <a href="https://wa.me/628972681444?text=Halo%20Mas%20Hervin%20(Driver%202%20DH%20Trans),%20saya%20ingin%20tanya%20posisi%20jemputan." target="_blank" class="btn btn-whatsapp btn-sm btn-full" style="background: #128C7E;">
+                💬 Hubungi Driver 2 (Hervin): 0897-2681-444
+              </a>
+            </div>
+          </div>
+
+          <!-- Vehicle & Telemetry Card -->
+          <div class="card" style="padding: 1.5rem; background: linear-gradient(135deg, var(--navy-900), var(--navy-800)); color: white;">
+            <h3 style="font-size: 1.05rem; color: var(--gold-400); margin-bottom: 1rem;">
+              🚘 Data Armada & Telemetri
+            </h3>
+
+            <div style="display: grid; gap: 0.8rem; font-size: 0.88rem;">
+              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.6);">Jenis Mobil</span>
+                <strong style="color: white;">Toyota All New Veloz (Hitam)</strong>
+              </div>
+              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.6);">Nomor Polisi</span>
+                <strong style="color: var(--gold-400); font-family: var(--font-primary);">W 1234 DH</strong>
+              </div>
+              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.6);">Kecepatan Rata-rata</span>
+                <strong style="color: #2ecc71;">78 km/jam (Tol)</strong>
+              </div>
+              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <span style="color: rgba(255,255,255,0.6);">Estimasi Tiba (ETA)</span>
+                <strong style="color: var(--gold-300);">~35 Menit lagi</strong>
+              </div>
+              <div class="summary-row">
+                <span style="color: rgba(255,255,255,0.6);">Kondisi Rute</span>
+                <strong style="color: #2ecc71;">Lancar via Tol Gempol</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- CS Support -->
+          <div class="card" style="padding: 1.2rem; text-align: center;">
+            <p style="font-size: 0.85rem; color: var(--gray-600); margin-bottom: 8px;">Ada kendala atau perubahan titik jemput?</p>
+            <a href="https://wa.me/6289671969214?text=Halo%20CS%20DH%20Trans,%20saya%20butuh%20bantuan%20terkait%20penjemputan." target="_blank" class="btn btn-outline btn-sm btn-full">
+              📱 Hubungi Customer Service (24 Jam)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Initialize Leaflet Live GPS Map
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mojokerto to Malang Route Waypoints
+      const routePoints = [
+        [-7.4726, 112.4381], // Mojokerto Kota (Alun-Alun / Terminal)
+        [-7.5412, 112.5830], // Mojosari
+        [-7.5925, 112.6953], // Masuk Gerbang Tol Gempol
+        [-7.6536, 112.6917], // Rest Area Tol Pandaan (Current Pos)
+        [-7.7540, 112.7120], // Exit Purwosari
+        [-7.8340, 112.6980], // Lawang
+        [-7.8890, 112.6680], // Singosari
+        [-7.9420, 112.6480], // Arjosari Malang
+        [-7.9797, 112.6304]  // Alun-Alun Kota Malang
+      ];
+
+      const map = L.map('gpsMap').setView([-7.6536, 112.6917], 10);
+
+      // OpenStreetMap Tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors | DH Trans GPS'
+      }).addTo(map);
+
+      // Draw Route Polyline
+      const polyline = L.polyline(routePoints, {
+        color: '#0a1628',
+        weight: 5,
+        opacity: 0.85,
+        dashArray: '8, 8'
+      }).addTo(map);
+
+      // Origin Marker (Mojokerto)
+      L.marker([-7.4726, 112.4381]).addTo(map)
+        .bindPopup('<b>📍 Asal: Mojokerto</b><br>Titik Awal Keberangkatan');
+
+      // Destination Marker (Malang)
+      L.marker([-7.9797, 112.6304]).addTo(map)
+        .bindPopup('<b>🏁 Tujuan: Malang</b><br>Titik Akhir Kedatangan');
+
+      // Custom Animated Car Icon
+      const carIcon = L.divIcon({
+        className: 'custom-car-icon',
+        html: '<div style="background: #0a1628; border: 3px solid #d4a843; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212,168,67,0.8); font-size: 1.2rem;">🚗</div>',
+        iconSize: [38, 38],
+        iconAnchor: [19, 19]
+      });
+
+      // Car Marker on current location (Tol Pandaan)
+      let currentStep = 3;
+      const carMarker = L.marker(routePoints[currentStep], { icon: carIcon }).addTo(map)
+        .bindPopup('<b>🚐 Posisi Armada DH Trans</b><br>Tol Pandaan KM 48 (Kecepatan: 78 km/jam)<br>Driver: Mas Zidan (Driver 1)')
+        .openPopup();
+
+      // Smooth Car Animation Simulation
+      setInterval(function() {
+        currentStep = (currentStep + 1) % routePoints.length;
+        if (currentStep === 0) currentStep = 1;
+        
+        const nextPos = routePoints[currentStep];
+        carMarker.setLatLng(nextPos);
+
+        const pct = Math.round((currentStep / (routePoints.length - 1)) * 100);
+        document.getElementById('progressBar').style.width = pct + '%';
+        document.getElementById('progressText').textContent = pct + '% (Sedang Melaju)';
+        
+        const now = new Date();
+        document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('id-ID') + ' WIB';
+      }, 5000);
+    });
+  </script>
+
+` }) %>

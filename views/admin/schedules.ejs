@@ -1,0 +1,94 @@
+<% var title = 'Kelola Jadwal'; var pageTitle = 'Jadwal & Tarif Keberangkatan'; %>
+<%- include('layout', { body: `
+
+  <!-- Add Schedule Form -->
+  <div class="admin-form-card">
+    <h3>+ Tambah Jadwal Baru</h3>
+    <form method="POST" action="/admin/schedules">
+      <div class="admin-form-inline">
+        <div class="form-group">
+          <label>Rute</label>
+          <select class="form-control" name="route_id" required>
+            ${routes.map(r => '<option value="' + r.id + '">' + r.origin + ' → ' + r.destination + '</option>').join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Jam Berangkat</label>
+          <input type="text" class="form-control" name="departure_time" placeholder="06:00" required>
+        </div>
+        <div class="form-group">
+          <label>Via Rute</label>
+          <input type="text" class="form-control" name="via" placeholder="Tol Gempol / Pandaan" required>
+        </div>
+        <div class="form-group">
+          <label>Harga (Rp)</label>
+          <input type="number" class="form-control" name="price" placeholder="150000" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="height: 48px;">Simpan Jadwal</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="admin-table-card">
+    <div class="admin-table-header">
+      <h2>Daftar Jadwal Aktif</h2>
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Rute</th>
+          <th>Jam Berangkat</th>
+          <th>Via</th>
+          <th>Harga</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${schedules.map(s => `
+          <tr>
+            <td><strong>${s.origin} → ${s.destination}</strong></td>
+            <td><span class="time-badge">${s.departure_time} WIB</span></td>
+            <td><span class="via-badge">${s.via}</span></td>
+            <td><strong style="color: var(--gold-600);">Rp${s.price.toLocaleString('id-ID')}</strong></td>
+            <td>
+              <span class="status-badge ${s.is_active ? 'status-completed' : 'status-cancelled'}">
+                ${s.is_active ? 'Aktif' : 'Nonaktif'}
+              </span>
+            </td>
+            <td>
+              <div class="actions">
+                <button class="btn-edit" onclick="toggleSchedule(${s.id})">${s.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                <button class="btn-delete" onclick="deleteSchedule(${s.id})">Hapus</button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function toggleSchedule(id) {
+      try {
+        const res = await fetch('/admin/schedules/' + id + '/toggle', { method: 'POST' });
+        if (res.ok) location.reload();
+      } catch (err) {
+        alert('Gagal mengubah status jadwal');
+      }
+    }
+
+    async function deleteSchedule(id) {
+      if (confirm('Yakin ingin menghapus jadwal ini?')) {
+        try {
+          const res = await fetch('/admin/schedules/' + id + '/delete', { method: 'POST' });
+          if (res.ok) location.reload();
+        } catch (err) {
+          alert('Gagal menghapus jadwal');
+        }
+      }
+    }
+  </script>
+
+` }) %>

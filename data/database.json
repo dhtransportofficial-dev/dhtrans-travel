@@ -1,0 +1,304 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "full_name": "Administrator DH Trans",
+      "role": "admin",
+      "created_at": "2026-08-17T19:51:16.228Z"
+    }
+  ],
+  "routes": [
+    {
+      "id": 1,
+      "origin": "Mojokerto",
+      "destination": "Malang",
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    },
+    {
+      "id": 2,
+      "origin": "Malang",
+      "destination": "Mojokerto",
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    }
+  ],
+  "schedules": [
+    {
+      "id": 1,
+      "route_id": 1,
+      "departure_time": "06:00",
+      "via": "Tol Gempol",
+      "price": 150000,
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    },
+    {
+      "id": 2,
+      "route_id": 1,
+      "departure_time": "15:00",
+      "via": "Pandaan",
+      "price": 130000,
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    },
+    {
+      "id": 3,
+      "route_id": 2,
+      "departure_time": "10:00",
+      "via": "Tol Gempol",
+      "price": 150000,
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    },
+    {
+      "id": 4,
+      "route_id": 2,
+      "departure_time": "19:00",
+      "via": "Pandaan",
+      "price": 130000,
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    }
+  ],
+  "fleet": [
+    {
+      "id": 1,
+      "name": "Toyota All New Veloz (Hitam)",
+      "type": "MPV Premium",
+      "capacity": 6,
+      "facilities": "Full AC Double Blower, Audio & Musik, Port USB Charger HP, Kursi Nyaman & Bersih, Bagasi Luas",
+      "image_url": "/images/fleet-veloz.png",
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    },
+    {
+      "id": 2,
+      "name": "Toyota Calya (Putih)",
+      "type": "Compact MPV",
+      "capacity": 6,
+      "facilities": "Full AC Dingin, Audio & Musik, Port Charger HP, Kabin Bersih & Wangi, Perjalanan Nyaman",
+      "image_url": "/images/fleet-calya.png",
+      "is_active": 1,
+      "created_at": "2026-08-17T19:51:16.229Z"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "Budi Santoso",
+      "route_text": "Mojokerto → Malang",
+      "rating": 5,
+      "comment": "Pelayanan sangat memuaskan! Driver ramah dan jemput tepat waktu di depan rumah. Mobil Veloz-nya bersih dan AC dingin. Sangat recommended!",
+      "is_approved": 1,
+      "created_at": "2026-08-14T19:51:16.229Z"
+    },
+    {
+      "id": 2,
+      "name": "Siti Rahayu",
+      "route_text": "Malang → Mojokerto",
+      "rating": 5,
+      "comment": "Sudah berkali-kali pakai DH Trans untuk dinas dan liburan. Selalu tepat waktu via Tol Gempol cepat sampai. Mantap!",
+      "is_approved": 1,
+      "created_at": "2026-08-12T19:51:16.229Z"
+    },
+    {
+      "id": 3,
+      "name": "Ahmad Fauzi",
+      "route_text": "Mojokerto → Malang",
+      "rating": 5,
+      "comment": "Tarifnya terjangkau Rp130.000 via Pandaan sudah door-to-door diantar sampai tujuan. Pelayanan nomor 1!",
+      "is_approved": 1,
+      "created_at": "2026-08-10T19:51:16.229Z"
+    },
+    {
+      "id": 4,
+      "name": "Dewi Lestari",
+      "route_text": "Malang → Mojokerto",
+      "rating": 5,
+      "comment": "Driver sangat sopan dan bawa mobilnya halus, tidak ugal-ugalan. Perjalanan malam jam 19.00 aman sekali.",
+      "is_approved": 1,
+      "created_at": "2026-08-07T19:51:16.229Z"
+    }
+  ],
+  "bookings": [
+    {
+      "id": 1,
+      "booking_code": "DH-20260817-599",
+      "booking_type": "regular",
+      "schedule_id": 1,
+      "travel_date": "2026-08-25",
+      "passenger_name": "Ahmad Dahlan",
+      "passenger_phone": "08987654321",
+      "passenger_email": null,
+      "passenger_count": 2,
+      "pickup_address": "Trowulan Kab. Mojokerto",
+      "dropoff_address": "Sawojajar Kota Malang",
+      "pickup_zone": "kabupaten",
+      "dropoff_zone": "kota",
+      "extra_fee": 40000,
+      "total_price": 340000,
+      "status": "pending",
+      "driver_id": 1,
+      "trip_progress": 10,
+      "current_location_desc": "Menunggu Penjemputan",
+      "notes": "Depan gapura candi",
+      "created_at": "2026-08-17T20:53:54.718Z",
+      "updated_at": "2026-08-17T20:53:54.718Z"
+    },
+    {
+      "id": 2,
+      "booking_code": "DH-20260817-807",
+      "booking_type": "regular",
+      "schedule_id": 1,
+      "travel_date": "2026-08-25",
+      "passenger_name": "Ahmad Dahlan",
+      "passenger_phone": "08987654321",
+      "passenger_email": null,
+      "passenger_count": 2,
+      "pickup_address": "Trowulan Kab. Mojokerto",
+      "dropoff_address": "Sawojajar Kota Malang",
+      "pickup_zone": "kabupaten",
+      "dropoff_zone": "kota",
+      "extra_fee": 40000,
+      "total_price": 340000,
+      "status": "pending",
+      "driver_id": 2,
+      "trip_progress": 10,
+      "current_location_desc": "Menunggu Penjemputan",
+      "notes": "Depan gapura candi",
+      "created_at": "2026-08-17T20:59:09.216Z",
+      "updated_at": "2026-08-17T20:59:09.216Z"
+    },
+    {
+      "id": 3,
+      "booking_code": "DH-20260817-674",
+      "booking_type": "regular",
+      "schedule_id": 1,
+      "travel_date": "2026-08-25",
+      "passenger_name": "Ahmad Dahlan",
+      "passenger_phone": "08987654321",
+      "passenger_email": null,
+      "passenger_count": 2,
+      "pickup_address": "Trowulan Kab. Mojokerto",
+      "dropoff_address": "Sawojajar Kota Malang",
+      "pickup_zone": "kabupaten",
+      "dropoff_zone": "kota",
+      "extra_fee": 40000,
+      "total_price": 340000,
+      "status": "pending",
+      "driver_id": 1,
+      "trip_progress": 10,
+      "current_location_desc": "Menunggu Penjemputan",
+      "notes": "Depan gapura candi",
+      "created_at": "2026-08-17T21:00:21.264Z",
+      "updated_at": "2026-08-17T21:00:21.264Z"
+    }
+  ],
+  "contacts": [
+    {
+      "id": 1,
+      "name": "Hendra Gunawan",
+      "email": "hendra@gmail.com",
+      "phone": "08789012345",
+      "subject": "Pertanyaan Rute & Carter",
+      "message": "Apakah melayani carter 1 mobil full untuk rombongan keluarga dari Mojokerto ke Malang?",
+      "is_read": 0,
+      "created_at": "2026-08-17T16:31:16.229Z"
+    }
+  ],
+  "charters": [
+    {
+      "id": 1,
+      "charter_code": "CTR-20260822-001",
+      "customer_name": "Hendra Gunawan",
+      "customer_phone": "08789012345",
+      "customer_email": "hendra@gmail.com",
+      "car_choice": "Toyota All New Veloz (Hitam)",
+      "charter_type": "PP (Pulang Pergi)",
+      "start_date": "2026-08-25",
+      "end_date": "2026-08-25",
+      "pickup_address": "Jl. Gajah Mada No. 100, Mojokerto",
+      "destination_address": "Wisata Gunung Bromo & Malang Kota",
+      "purpose": "Liburan Rombongan Keluarga (6 Orang)",
+      "offered_price": 850000,
+      "status": "deal",
+      "notes": "Termasuk mobil + driver + bbm",
+      "created_at": "2026-08-17T17:33:20.952Z"
+    },
+    {
+      "id": 2,
+      "charter_code": "CTR-20260817-237",
+      "customer_name": "Budi Santoso",
+      "customer_phone": "081234567890",
+      "customer_email": null,
+      "car_choice": "Toyota All New Veloz (Hitam)",
+      "charter_type": "Drop Sekali Jalan (One Way)",
+      "start_date": "2026-08-25",
+      "end_date": "2026-08-25",
+      "pickup_address": "Pacet Mojokerto",
+      "destination_address": "Batu Malang",
+      "purpose": "Wisata Keluarga",
+      "offered_price": 0,
+      "status": "menunggu_penawaran",
+      "notes": "Bawa koper",
+      "created_at": "2026-08-17T20:53:54.702Z"
+    },
+    {
+      "id": 3,
+      "charter_code": "CTR-20260817-422",
+      "customer_name": "Budi Santoso",
+      "customer_phone": "081234567890",
+      "customer_email": null,
+      "car_choice": "Toyota All New Veloz (Hitam)",
+      "charter_type": "Drop Sekali Jalan (One Way)",
+      "start_date": "2026-08-25",
+      "end_date": "2026-08-25",
+      "pickup_address": "Pacet Mojokerto",
+      "destination_address": "Batu Malang",
+      "purpose": "Wisata Keluarga",
+      "offered_price": 0,
+      "status": "menunggu_penawaran",
+      "notes": "Bawa koper",
+      "created_at": "2026-08-17T20:59:09.201Z"
+    },
+    {
+      "id": 4,
+      "charter_code": "CTR-20260817-755",
+      "customer_name": "Budi Santoso",
+      "customer_phone": "081234567890",
+      "customer_email": null,
+      "car_choice": "Toyota All New Veloz (Hitam)",
+      "charter_type": "Drop Sekali Jalan (One Way)",
+      "start_date": "2026-08-25",
+      "end_date": "2026-08-25",
+      "pickup_address": "Pacet Mojokerto",
+      "destination_address": "Batu Malang",
+      "purpose": "Wisata Keluarga",
+      "offered_price": 0,
+      "status": "menunggu_penawaran",
+      "notes": "Bawa koper",
+      "created_at": "2026-08-17T21:00:21.248Z"
+    }
+  ],
+  "drivers": [
+    {
+      "id": 1,
+      "name": "Zidan (Driver 1)",
+      "phone": "081918401858",
+      "car": "Toyota All New Veloz (Hitam)",
+      "plate": "W 1234 DH",
+      "is_active": 1
+    },
+    {
+      "id": 2,
+      "name": "Hervin (Driver 2)",
+      "phone": "08972681444",
+      "car": "Toyota Calya (Putih)",
+      "plate": "N 5678 DH",
+      "is_active": 1
+    }
+  ]
+}
