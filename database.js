@@ -56,8 +56,38 @@ const defaultData = {
     }
   ],
   drivers: [
-    { id: 1, name: 'Zidan (Driver 1)', phone: '081918401858', car: 'Toyota All New Veloz (Hitam)', plate: 'W 1234 DH', is_active: 1 },
-    { id: 2, name: 'Hervin (Driver 2)', phone: '08972681444', car: 'Toyota Calya (Putih)', plate: 'N 5678 DH', is_active: 1 }
+    { 
+      id: 1, 
+      name: 'Mas Zidan (Driver 1)', 
+      phone: '081918401858', 
+      car: 'Toyota All New Veloz (Hitam)', 
+      plate: 'W 1234 DH', 
+      is_active: 1,
+      is_tracking_active: 0, // 0 = Offline/Standby, 1 = Live Online
+      current_lat: -7.6536,
+      current_lng: 112.6917,
+      speed: 0,
+      accuracy: 0,
+      heading: 0,
+      location_name: 'Standby Mojokerto',
+      last_updated: new Date().toISOString()
+    },
+    { 
+      id: 2, 
+      name: 'Mas Hervin (Driver 2)', 
+      phone: '08972681444', 
+      car: 'Toyota Calya (Putih)', 
+      plate: 'N 5678 DH', 
+      is_active: 1,
+      is_tracking_active: 0,
+      current_lat: -7.9797,
+      current_lng: 112.6304,
+      speed: 0,
+      accuracy: 0,
+      heading: 0,
+      location_name: 'Standby Malang',
+      last_updated: new Date().toISOString()
+    }
   ],
   testimonials: [
     {
@@ -114,6 +144,9 @@ const defaultData = {
       dropoff_address: 'Jl. Soekarno Hatta No. 88, Lowokwaru, Malang',
       extra_fee: 0,
       total_price: 300000,
+      payment_method: 'cash',
+      payment_status: 'pending',
+      is_gps_allowed: 1,
       status: 'confirmed',
       driver_id: 1,
       trip_progress: 65, // % progress for GPS
@@ -138,6 +171,9 @@ const defaultData = {
       dropoff_address: 'Perumahan Puri Mojokerto Blok B3, Kec. Puri, Kab. Mojokerto',
       extra_fee: 20000,
       total_price: 170000,
+      payment_method: 'qris',
+      payment_status: 'paid',
+      is_gps_allowed: 1,
       status: 'pending',
       driver_id: 2,
       trip_progress: 20,
@@ -663,7 +699,81 @@ const db = {
   }
 };
 
+// Driver GPS Update Function (from Driver HP)
+function updateDriverLocation(driver_id, { lat, lng, speed, accuracy, heading, is_tracking_active, location_name }) {
+  const data = loadData();
+  if (!data.drivers) data.drivers = defaultData.drivers;
+  const driver = data.drivers.find(d => d.id === parseInt(driver_id));
+  if (!driver) return false;
+
+  if (typeof is_tracking_active !== 'undefined') {
+    driver.is_tracking_active = is_tracking_active ? 1 : 0;
+  }
+  if (lat && lng) {
+    driver.current_lat = parseFloat(lat);
+    driver.current_lng = parseFloat(lng);
+  }
+  if (typeof speed !== 'undefined') driver.speed = Math.round(parseFloat(speed) || 0);
+  if (typeof accuracy !== 'undefined') driver.accuracy = Math.round(parseFloat(accuracy) || 0);
+  if (typeof heading !== 'undefined') driver.heading = Math.round(parseFloat(heading) || 0);
+  if (location_name) driver.location_name = location_name;
+  driver.last_updated = new Date().toISOString();
+
+  saveData(data);
+  return driver;
+}
+
+// Get GPS Tracking info for a booking code
+function getTrackingInfo(booking_code) {
+  const data = loadData();
+  const search = (booking_code || '').trim().toUpperCase();
+  const b = data.bookings.find(item => item.booking_code.trim().toUpperCase() === search);
+  if (!b) return null;
+
+  const s = data.schedules.find(sc => sc.id === b.schedule_id);
+  const r = s ? data.routes.find(rt => rt.id === s.route_id) : null;
+  const driverId = b.driver_id || 1;
+  const driver = (data.drivers || []).find(d => d.id === driverId) || defaultData.drivers[0];
+
+  const isGpsOnline = (driver.is_tracking_active === 1) && (b.is_gps_allowed !== 0);
+
+  return {
+    booking: {
+      ...b,
+      origin: r ? r.origin : 'Mojokerto',
+      destination: r ? r.destination : 'Malang',
+      departure_time: s ? s.departure_time : '06:00',
+      via: s ? s.via : 'Tol Gempol'
+    },
+    driver: {
+      id: driver.id,
+      name: driver.name,
+      phone: driver.phone,
+      car: driver.car,
+      plate: driver.plate
+    },
+    gps: {
+      is_online: isGpsOnline,
+      lat: driver.current_lat || -7.6536,
+      lng: driver.current_lng || 112.6917,
+      speed: driver.speed || 0,
+      accuracy: driver.accuracy || 0,
+      location_name: driver.location_name || 'Rest Area Tol KM 48',
+      last_updated: driver.last_updated
+    }
+  };
+}
+
 // Initialize file on startup
 loadData();
 
-module.exports = { db, generateBookingCode, generateCharterCode, getSeatAvailability, loadData, saveData };
+module.exports = { 
+  db, 
+  generateBookingCode, 
+  generateCharterCode, 
+  getSeatAvailability, 
+  loadData, 
+  saveData,
+  updateDriverLocation,
+  getTrackingInfo
+};

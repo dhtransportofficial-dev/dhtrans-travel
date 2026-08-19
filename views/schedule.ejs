@@ -16,13 +16,79 @@
   <section class="section">
     <div class="container">
       <!-- Info Banner -->
-      <div style="background: linear-gradient(135deg, var(--gold-500), var(--gold-400)); border-radius: var(--radius-lg); padding: 1.5rem 2rem; margin-bottom: 2.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <div style="background: linear-gradient(135deg, var(--gold-500), var(--gold-400)); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
         <span style="font-size: 2rem;">🚐</span>
         <div>
-          <h3 style="color: var(--navy-900); font-size: 1.1rem;">Setiap Hari Berangkat!</h3>
-          <p style="color: rgba(10,22,40,0.7); font-size: 0.9rem;">On time setiap saat • Layanan Door to Door • Driver Profesional</p>
+          <h3 style="color: var(--navy-900); font-size: 1.05rem; margin: 0;">Setiap Hari Berangkat! (Mojokerto ⇄ Malang)</h3>
+          <p style="color: rgba(10,22,40,0.8); font-size: 0.82rem; margin: 2px 0 0;">Layanan Door-to-Door • On Time • Bayar di Sopir / QRIS / Transfer Bank</p>
         </div>
-        <a href="/booking" class="btn" style="margin-left: auto; background: var(--navy-800); color: white;">Pesan Sekarang</a>
+        <a href="/booking" class="btn" style="margin-left: auto; background: var(--navy-900); color: white; padding: 8px 16px; font-weight: 700;">Pesan Tiket Online →</a>
+      </div>
+
+      <!-- Structured Comparison Table Section -->
+      <div class="card animate-on-scroll" style="padding: 1.25rem; border-radius: var(--radius-lg); margin-bottom: 2.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 6px;">
+          <div>
+            <h2 style="font-size: 1.15rem; color: var(--navy-900); margin: 0;">📋 Tabel Rute, Jadwal & Tarif Resmi</h2>
+            <p style="font-size: 0.78rem; color: var(--gray-600); margin: 2px 0 0;">Daftar lengkap tarif per orang door-to-door (dijemput & diantar sampai alamat)</p>
+          </div>
+          <span class="status-badge status-completed" style="font-size: 0.72rem;">🟢 Buka Setiap Hari</span>
+        </div>
+
+        <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+          <table class="schedule-table-modern" style="margin-top: 0;">
+            <thead>
+              <tr>
+                <th>Rute Perjalanan</th>
+                <th>Jam Berangkat</th>
+                <th>Jalur / Via</th>
+                <th>Armada Mobil</th>
+                <th>Tarif / Orang</th>
+                <th>Metode Bayar</th>
+                <th>Pemesanan</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${schedules.map(s => `
+                <tr>
+                  <td>
+                    <strong style="color: var(--navy-900); font-size: 0.9rem;">${s.origin} → ${s.destination}</strong>
+                    <div style="font-size: 0.72rem; color: var(--gray-500);">Door to Door</div>
+                  </td>
+                  <td>
+                    <strong style="color: var(--navy-900); font-size: 0.95rem; font-family: monospace;">⏰ ${s.departure_time} WIB</strong>
+                  </td>
+                  <td>
+                    <span class="schedule-via-tag ${s.via.toLowerCase().includes('tol') ? 'tag-tol' : 'tag-pandaan'}" style="font-size: 0.72rem; padding: 3px 8px;">Via ${s.via}</span>
+                  </td>
+                  <td style="font-size: 0.8rem; color: var(--navy-800);">
+                    🚗 All New Veloz / Calya
+                  </td>
+                  <td>
+                    <strong style="color: var(--gold-600); font-size: 1rem;">Rp${s.price.toLocaleString("id-ID")}</strong>
+                    <small style="color: var(--gray-500); display: block; font-size: 0.68rem;">/kursi/orang</small>
+                  </td>
+                  <td>
+                    <div style="font-size: 0.75rem; color: var(--gray-700); line-height: 1.4;">
+                      💵 Bayar di Sopir<br>
+                      📱 QRIS / Bank
+                    </div>
+                  </td>
+                  <td>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <a href="/booking?schedule=${s.id}" class="btn btn-sm btn-primary" style="padding: 4px 10px; font-size: 0.72rem; text-align: center;">
+                        🎫 Pesan Tiket
+                      </a>
+                      <a href="https://wa.me/6289671969214?text=${encodeURIComponent('Halo DH Trans! Saya mau tanya jadwal ' + s.origin + ' ke ' + s.destination + ' jam ' + s.departure_time + ' WIB (Via ' + s.via + ').')}" target="_blank" class="btn btn-sm btn-whatsapp" style="padding: 4px 10px; font-size: 0.72rem; text-align: center;">
+                        💬 Chat WA
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="schedule-grid">

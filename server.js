@@ -2,7 +2,16 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const crypto = require('crypto');
-const { db, generateBookingCode, generateCharterCode, getSeatAvailability, loadData, saveData } = require('./database');
+const { 
+  db, 
+  generateBookingCode, 
+  generateCharterCode, 
+  getSeatAvailability, 
+  loadData, 
+  saveData,
+  updateDriverLocation,
+  getTrackingInfo
+} = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,13 +37,10 @@ app.use((req, res, next) => {
   res.locals.adminUser = req.session && req.session.adminUser;
   res.locals.instagramUrl = 'https://www.instagram.com/dhtrans.id?igsh=MTJkZ3gzcXp5NGkxaQ%3D%3D&utm_source=qr';
   res.locals.instagramHandle = '@dhtrans.id';
-  res.locals.driver1 = '0819-1840-1858';
-  res.locals.driver2 = '0897-2681-444';
-  res.locals.csPhone = '0896-7196-9214';
   next();
 });
 
-// Auth middleware
+// Admin auth middleware
 function requireAdmin(req, res, next) {
   if (req.session && req.session.isAdmin) {
     return next();
@@ -48,12 +54,7 @@ function requireAdmin(req, res, next) {
 
 // Home page
 app.get('/', (req, res) => {
-  const routes = db.prepare(`
-    SELECT r.*, 
-      (SELECT COUNT(*) FROM schedules s WHERE s.route_id = r.id AND s.is_active = 1) as schedule_count
-    FROM routes r WHERE r.is_active = 1
-  `).all();
-
+  const routes = db.prepare('SELECT r.*, (SELECT COUNT(*) FROM schedules WHERE route_id = r.id AND is_active = 1) as schedule_count FROM routes r WHERE r.is_active = 1').all();
   const schedules = db.prepare(`
     SELECT s.*, r.origin, r.destination 
     FROM schedules s 
@@ -61,24 +62,10 @@ app.get('/', (req, res) => {
     WHERE s.is_active = 1 AND r.is_active = 1
     ORDER BY r.id, s.departure_time
   `).all();
-
-  const testimonials = db.prepare(`
-    SELECT * FROM testimonials WHERE is_approved = 1 ORDER BY created_at DESC LIMIT 6
-  `).all();
-
   const fleet = db.prepare('SELECT * FROM fleet WHERE is_active = 1').all();
+  const testimonials = db.prepare('SELECT * FROM testimonials WHERE is_approved = 1 ORDER BY created_at DESC LIMIT 6').all();
 
-  res.render('index', { routes, schedules, testimonials, fleet, page: 'home' });
-});
-
-// API Seat Availability Check
-app.get('/api/seats', (req, res) => {
-  const { schedule_id, travel_date } = req.query;
-  if (!schedule_id) {
-    return res.status(400).json({ error: 'schedule_id required' });
-  }
-  const availability = getSeatAvailability(schedule_id, travel_date);
-  res.json(availability);
+  res.render('index', { routes, schedules, fleet, testimonials, page: 'home' });
 });
 
 // Booking page
@@ -95,7 +82,17 @@ app.get('/booking', (req, res) => {
   res.render('booking', { schedules, selectedSchedule, page: 'booking' });
 });
 
-// Process Regular Travel Booking
+// API Seat Availability Check
+app.get('/api/seats', (req, res) => {
+  const { schedule_id, travel_date } = req.query;
+  if (!schedule_id) {
+    return res.status(400).json({ error: 'schedule_id is required' });
+  }
+  const info = getSeatAvailability(schedule_id, travel_date);
+  res.json(info);
+});
+
+// Process Booking
 app.post('/booking', (req, res) => {
   try {
     const { 
@@ -109,55 +106,74 @@ app.post('/booking', (req, res) => {
       dropoff_address, 
       pickup_zone, 
       dropoff_zone, 
+      payment_method,
       notes 
     } = req.body;
 
+    const count = parseInt(passenger_count) || 1;
+
+    // Check seat availability before confirming
+    const seatInfo = getSeatAvailability(schedule_id, travel_date);
+    if (seatInfo.availableSeats < count) {
+      return res.status(400).json({ 
+        error: `Kursi tidak mencukupi. Tersisa ${seatInfo.availableSeats} kursi untuk tanggal ${travel_date}.` 
+      });
+    }
+
     const schedule = db.prepare(`
       SELECT s.*, r.origin, r.destination 
-      FROM schedules s JOIN routes r ON s.route_id = r.id 
+      FROM schedules s 
+      JOIN routes r ON s.route_id = r.id 
       WHERE s.id = ?
     `).get(schedule_id);
 
     if (!schedule) {
-      return res.status(400).json({ error: 'Jadwal tidak ditemukan' });
+      return res.status(404).json({ error: 'Jadwal tidak ditemukan' });
     }
 
-    const count = parseInt(passenger_count || 1);
-
-    // Check Seat Availability
-    const seatInfo = getSeatAvailability(schedule_id, travel_date);
-    if (seatInfo.isFull || seatInfo.availableSeats < count) {
-      return res.status(400).json({ 
-        error: `Maaf, kursi pada jadwal ini sudah penuh / tidak mencukupi untuk ${travel_date}. Tersisa: ${seatInfo.availableSeats} kursi.` 
-      });
-    }
-
-    const pickupSurcharge = pickup_zone === 'kabupaten' ? 20000 * count : 0;
-    const dropoffSurcharge = dropoff_zone === 'kabupaten' ? 20000 * count : 0;
-    const totalExtraFee = pickupSurcharge + dropoffSurcharge;
+    // Calculate Pricing
     const basePrice = schedule.price * count;
+    let extraPerPax = 0;
+    if (pickup_zone === 'kabupaten') extraPerPax += 20000;
+    if (dropoff_zone === 'kabupaten') extraPerPax += 20000;
+    const totalExtraFee = extraPerPax * count;
     const totalPrice = basePrice + totalExtraFee;
-    const bookingCode = generateBookingCode();
 
-    db.prepare(`
-      INSERT INTO bookings (booking_code, schedule_id, travel_date, passenger_name, passenger_phone, passenger_email, passenger_count, pickup_address, dropoff_address, pickup_zone, dropoff_zone, extra_fee, total_price, status, notes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
-    `).run(
-      bookingCode, 
-      schedule_id, 
-      travel_date, 
-      passenger_name, 
-      passenger_phone, 
-      passenger_email || null, 
-      count, 
-      pickup_address, 
-      dropoff_address, 
-      pickup_zone || 'kota', 
-      dropoff_zone || 'kota', 
-      totalExtraFee, 
-      totalPrice, 
-      notes || null
-    );
+    const bookingCode = generateBookingCode();
+    const chosenPayment = payment_method || 'cash';
+    const payStatus = chosenPayment === 'cash' ? 'cod' : 'pending';
+
+    const dbData = loadData();
+    const newId = dbData.bookings.length > 0 ? Math.max(...dbData.bookings.map(b => b.id)) + 1 : 1;
+    const newBooking = {
+      id: newId,
+      booking_code: bookingCode,
+      booking_type: 'regular',
+      schedule_id: parseInt(schedule_id),
+      travel_date,
+      passenger_name,
+      passenger_phone,
+      passenger_email: passenger_email || null,
+      passenger_count: count,
+      pickup_address,
+      dropoff_address,
+      pickup_zone: pickup_zone || 'kota',
+      dropoff_zone: dropoff_zone || 'kota',
+      extra_fee: totalExtraFee,
+      total_price: totalPrice,
+      payment_method: chosenPayment,
+      payment_status: payStatus,
+      is_gps_allowed: 1,
+      status: 'pending',
+      driver_id: (newId % 2 === 1) ? 1 : 2,
+      trip_progress: 10,
+      current_location_desc: 'Menunggu Penjemputan',
+      notes: notes || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    dbData.bookings.push(newBooking);
+    saveData(dbData);
 
     // Build area descriptions for WhatsApp message
     const pickupDesc = pickup_zone === 'kabupaten' 
@@ -173,6 +189,12 @@ app.post('/booking', (req, res) => {
     }
     feeBreakdown += `\n💵 TOTAL BAYAR: Rp${totalPrice.toLocaleString('id-ID')}`;
 
+    const paymentLabel = chosenPayment === 'qris' 
+      ? '📱 QRIS (DH TRAVEL - NMID: ID1025421042405)' 
+      : chosenPayment === 'transfer' 
+        ? '🏦 Transfer BCA: 0501199302 (a.n. DH TRAVEL)' 
+        : '💵 Bayar Tunai ke Sopir (COD saat penjemputan)';
+
     // Build WhatsApp message
     const waMessage = `Halo DH Trans! Saya ingin konfirmasi pemesanan tiket travel:\n\n` +
       `📋 Kode Booking: ${bookingCode}\n` +
@@ -182,7 +204,8 @@ app.post('/booking', (req, res) => {
       `👤 Nama: ${passenger_name}\n` +
       `👥 Jumlah: ${count} orang\n` +
       `📍 Titik Jemput: ${pickupDesc}\n` +
-      `📍 Titik Antar: ${dropoffDesc}\n\n` +
+      `📍 Titik Antar: ${dropoffDesc}\n` +
+      `💳 Metode Bayar: ${paymentLabel}\n\n` +
       `${feeBreakdown}\n\n` +
       `Mohon konfirmasi pesanan saya. Terima kasih! 🙏`;
 
@@ -194,6 +217,7 @@ app.post('/booking', (req, res) => {
       basePrice,
       extraFee: totalExtraFee,
       totalPrice,
+      paymentMethod: chosenPayment,
       remainingSeats: seatInfo.availableSeats - count,
       waLink,
       message: 'Pemesanan berhasil dibuat!' 
@@ -278,17 +302,68 @@ app.post('/carter', (req, res) => {
 // Live GPS Tracking page
 app.get('/tracking', (req, res) => {
   const code = (req.query.code || '').trim().toUpperCase();
-  let booking = null;
-  if (code) {
-    booking = db.prepare(`
-      SELECT b.*, s.departure_time, s.via, s.price, r.origin, r.destination
-      FROM bookings b
-      JOIN schedules s ON b.schedule_id = s.id
-      JOIN routes r ON s.route_id = r.id
-      WHERE b.booking_code = ?
-    `).get(code);
+  const trackingData = code ? getTrackingInfo(code) : null;
+  res.render('tracking', { 
+    page: 'tracking', 
+    trackingData, 
+    searchCode: code, 
+    error: code && !trackingData ? 'Kode booking tidak ditemukan' : null 
+  });
+});
+
+// Real-time GPS API (Polled every 4 seconds by tracking map)
+app.get('/api/tracking/live/:code', (req, res) => {
+  const code = (req.params.code || '').trim().toUpperCase();
+  const info = getTrackingInfo(code);
+  if (!info) {
+    return res.status(404).json({ success: false, error: 'Booking tidak ditemukan' });
   }
-  res.render('tracking', { page: 'tracking', booking, searchCode: code, error: code && !booking ? 'Kode booking tidak ditemukan' : null });
+  res.json({ success: true, ...info });
+});
+
+// Driver Portal Page (Buka di HP Driver untuk Mengaktifkan GPS)
+app.get('/driver', (req, res) => {
+  const data = loadData();
+  const drivers = data.drivers || [];
+  const selectedDriverId = parseInt(req.query.id || '1');
+  const driver = drivers.find(d => d.id === selectedDriverId) || drivers[0];
+  const activeBookings = (data.bookings || []).filter(b => b.status === 'confirmed' || b.status === 'pending');
+
+  res.render('driver', { 
+    page: 'driver', 
+    drivers, 
+    selectedDriver: driver, 
+    activeBookings 
+  });
+});
+
+// Driver Toggle GPS Broadcast
+app.post('/api/driver/toggle-gps', (req, res) => {
+  const { driver_id, is_tracking_active } = req.body;
+  const updated = updateDriverLocation(driver_id, { is_tracking_active });
+  if (!updated) {
+    return res.status(404).json({ success: false, error: 'Driver tidak ditemukan' });
+  }
+  res.json({ success: true, driver: updated });
+});
+
+// Driver Update Real GPS Location (From Phone Geolocation)
+app.post('/api/driver/location', (req, res) => {
+  const { driver_id, lat, lng, speed, accuracy, heading, location_name } = req.body;
+  const updated = updateDriverLocation(driver_id, {
+    lat,
+    lng,
+    speed,
+    accuracy,
+    heading,
+    location_name,
+    is_tracking_active: 1
+  });
+
+  if (!updated) {
+    return res.status(404).json({ success: false, error: 'Driver tidak ditemukan' });
+  }
+  res.json({ success: true, driver: updated });
 });
 
 // Check booking
@@ -342,10 +417,15 @@ app.get('/kontak', (req, res) => {
 app.get('/contact', (req, res) => res.redirect('/kontak'));
 
 app.post('/kontak', (req, res) => {
-  const { name, email, phone, subject, message } = req.body;
-  db.prepare('INSERT INTO contacts (name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?)')
-    .run(name, email || null, phone || null, subject || null, message);
-  res.render('contact', { page: 'kontak', success: true });
+  try {
+    const { name, email, phone, subject, message } = req.body;
+    db.prepare('INSERT INTO contacts (name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?)')
+      .run(name, email || null, phone || null, subject || 'Umum', message);
+    res.render('contact', { page: 'kontak', success: true });
+  } catch (err) {
+    console.error('Contact error:', err);
+    res.render('contact', { page: 'kontak', success: false, error: 'Gagal mengirim pesan' });
+  }
 });
 
 // Submit testimonial
@@ -360,7 +440,7 @@ app.post('/testimonial', (req, res) => {
 // ADMIN ROUTES
 // ============================================
 
-// Admin login
+// Admin login page
 app.get('/admin/login', (req, res) => {
   if (req.session && req.session.isAdmin) {
     return res.redirect('/admin');
@@ -370,9 +450,9 @@ app.get('/admin/login', (req, res) => {
 
 app.post('/admin/login', (req, res) => {
   const { username, password } = req.body;
-  const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-  const user = db.prepare('SELECT * FROM users WHERE username = ? AND password = ?').get(username, hashedPassword);
-  
+  const hash = crypto.createHash('sha256').update(password).digest('hex');
+  const user = db.prepare('SELECT * FROM users WHERE username = ? AND password = ?').get(username, hash);
+
   if (user) {
     req.session.isAdmin = true;
     req.session.adminUser = { id: user.id, username: user.username, full_name: user.full_name };
@@ -401,7 +481,8 @@ app.get('/admin', requireAdmin, (req, res) => {
     pendingTestimonials: db.prepare("SELECT COUNT(*) as count FROM testimonials WHERE is_approved = 0").get().count,
   };
   
-  res.render('admin/dashboard', { page: 'admin-dashboard', stats });
+  const drivers = loadData().drivers || [];
+  res.render('admin/dashboard', { page: 'admin-dashboard', stats, drivers });
 });
 
 // Admin bookings
@@ -414,7 +495,8 @@ app.get('/admin/bookings', requireAdmin, (req, res) => {
     JOIN routes r ON s.route_id = r.id
   `).all(status);
   
-  res.render('admin/bookings', { page: 'admin-bookings', bookings, currentStatus: status });
+  const drivers = loadData().drivers || [];
+  res.render('admin/bookings', { page: 'admin-bookings', bookings, drivers, currentStatus: status });
 });
 
 // Update booking status
@@ -422,6 +504,29 @@ app.post('/admin/bookings/:id/status', requireAdmin, (req, res) => {
   const { status } = req.body;
   db.prepare("UPDATE bookings SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(status, req.params.id);
   res.json({ success: true });
+});
+
+// Update booking payment status
+app.post('/admin/bookings/:id/payment', requireAdmin, (req, res) => {
+  const { payment_status } = req.body;
+  const data = loadData();
+  const b = data.bookings.find(item => item.id === parseInt(req.params.id));
+  if (b) {
+    b.payment_status = payment_status;
+    saveData(data);
+  }
+  res.json({ success: true });
+});
+
+// Toggle booking GPS permission
+app.post('/admin/bookings/:id/gps-toggle', requireAdmin, (req, res) => {
+  const data = loadData();
+  const b = data.bookings.find(item => item.id === parseInt(req.params.id));
+  if (b) {
+    b.is_gps_allowed = b.is_gps_allowed === 0 ? 1 : 0;
+    saveData(data);
+  }
+  res.json({ success: true, is_gps_allowed: b ? b.is_gps_allowed : 1 });
 });
 
 // Delete booking

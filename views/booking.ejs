@@ -136,6 +136,41 @@
               </div>
             </div>
 
+            <!-- Metode Pembayaran Section -->
+            <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem;">
+              <label style="font-weight: 700; color: var(--navy-800); display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
+                💳 Pilih Metode Pembayaran *
+              </label>
+              <div class="payment-selector-grid">
+                <label class="payment-card-opt selected">
+                  <input type="radio" name="payment_method" value="cash" checked onchange="updatePaymentMethod(this.value)">
+                  <span style="font-size: 1.4rem;">💵</span>
+                  <div>
+                    <strong style="display: block; color: var(--navy-900);">Bayar di Sopir</strong>
+                    <small style="color: var(--gray-600);">Cash saat penjemputan (COD)</small>
+                  </div>
+                </label>
+
+                <label class="payment-card-opt">
+                  <input type="radio" name="payment_method" value="qris" onchange="updatePaymentMethod(this.value)">
+                  <span style="font-size: 1.4rem;">📱</span>
+                  <div>
+                    <strong style="display: block; color: var(--navy-900);">QRIS DH Travel</strong>
+                    <small style="color: var(--gray-600);">Scan semua Bank / E-Wallet</small>
+                  </div>
+                </label>
+
+                <label class="payment-card-opt">
+                  <input type="radio" name="payment_method" value="transfer" onchange="updatePaymentMethod(this.value)">
+                  <span style="font-size: 1.4rem;">🏦</span>
+                  <div>
+                    <strong style="display: block; color: var(--navy-900);">Transfer BCA</strong>
+                    <small style="color: var(--gray-600);">No. Rek: 0501199302</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             <div class="form-group">
               <label for="notes">Catatan Tambahan (opsional)</label>
               <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Contoh: Bawa koper besar, patokan depan masjid, butuh kursi tengah, dll."></textarea>
@@ -170,6 +205,10 @@
             <div class="summary-row">
               <span class="label">Jumlah Kursi</span>
               <span class="value" id="summaryPassengers">1 orang</span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Metode Bayar</span>
+              <span class="value" id="summaryPaymentMethod" style="font-weight: 700; color: #ffffff !important;">💵 Bayar di Sopir</span>
             </div>
             <div class="summary-row">
               <span class="label">Status Kursi</span>
@@ -253,14 +292,21 @@
 
   <!-- Booking Success Modal -->
   <div class="modal-overlay" id="bookingModal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 520px;">
       <div class="modal-icon">✅</div>
       <h2>Pemesanan Berhasil!</h2>
-      <p>Pesanan Anda telah tercatat di sistem DH Trans. Silakan klik tombol di bawah untuk konfirmasi ke WhatsApp kami.</p>
-      <div class="modal-booking-code">
-        <small style="color: #868e96;">Kode Booking Anda:</small><br>
+      <p style="font-size: 0.88rem; color: var(--gray-600); margin-bottom: 1rem;">Pesanan Anda telah tercatat di sistem DH Trans.</p>
+      
+      <div class="modal-booking-code" style="margin-bottom: 1rem;">
+        <small style="color: #64748b;">Kode Booking Anda:</small><br>
         <span id="modalBookingCode">-</span>
       </div>
+
+      <!-- Dynamic Payment Instructions -->
+      <div id="modalPaymentInfo" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem; text-align: left;">
+        <!-- Filled by JS -->
+      </div>
+
       <div class="modal-actions">
         <a href="#" id="modalWaLink" class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener">
           💬 Konfirmasi via WhatsApp
@@ -383,12 +429,28 @@
     // Trigger on load
     updateSummary();
 
+    function updatePaymentMethod(val) {
+      document.querySelectorAll('.payment-card-opt').forEach(el => el.classList.remove('selected'));
+      const activeRadio = document.querySelector('input[name="payment_method"][value="' + val + '"]');
+      if (activeRadio && activeRadio.parentElement) {
+        activeRadio.parentElement.classList.add('selected');
+      }
+
+      const labelMap = {
+        'cash': '💵 Bayar di Sopir',
+        'qris': '📱 QRIS DH Travel',
+        'transfer': '🏦 Transfer BCA'
+      };
+      document.getElementById('summaryPaymentMethod').textContent = labelMap[val] || '💵 Bayar di Sopir';
+    }
+
     // Form submit
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       submitBtn.disabled = true;
       submitBtn.innerHTML = '⏳ Memproses Pesanan...';
 
+      const paymentMethod = getSelectedRadioValue('payment_method');
       const formData = {
         schedule_id: document.getElementById('schedule_id').value,
         travel_date: document.getElementById('travel_date').value,
@@ -400,6 +462,7 @@
         pickup_address: document.getElementById('pickup_address').value,
         dropoff_zone: getSelectedRadioValue('dropoff_zone'),
         dropoff_address: document.getElementById('dropoff_address').value,
+        payment_method: paymentMethod,
         notes: document.getElementById('notes').value,
       };
 
@@ -415,6 +478,52 @@
           document.getElementById('modalBookingCode').textContent = data.bookingCode;
           document.getElementById('modalWaLink').href = data.waLink;
           document.getElementById('modalTrackingLink').href = '/tracking?code=' + data.bookingCode;
+
+          // Render Dynamic Payment Instructions
+          const pInfo = document.getElementById('modalPaymentInfo');
+          const totalRp = 'Rp' + data.totalPrice.toLocaleString('id-ID');
+
+          if (paymentMethod === 'qris') {
+            pInfo.innerHTML =
+              '<div style="text-align: center;">' +
+              '<div style="display: inline-flex; align-items: center; gap: 6px; background: #dc2626; color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px;">' +
+              '📱 PEMBAYARAN QRIS — DH TRAVEL</div>' +
+              '<div style="font-size: 1.05rem; font-weight: 800; color: #0a1628; margin-bottom: 8px;">Total Bayar: ' + totalRp + '</div>' +
+              '<div style="background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px; max-width: 220px; margin: 0 auto 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">' +
+              '<img src="/images/qris-dhtrans.png" alt="QRIS DH Travel" style="width: 180px; height: auto; display: block; margin: 0 auto; border-radius: 6px;">' +
+              '</div>' +
+              '<div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 8px 12px; font-size: 0.78rem; color: #991b1b; font-weight: 700; margin-bottom: 6px;">NMID: ID1025421042405 • A01 • DH TRAVEL</div>' +
+              '<p style="font-size: 0.76rem; color: #475569; margin: 0;">Scan via BCA Mobile, Dana, GoPay, OVO, ShopeePay, BRImo, Mandiri Livin. Kirim bukti bayar ke WhatsApp CS.</p>' +
+              '</div>';
+          } else if (paymentMethod === 'transfer') {
+            pInfo.innerHTML =
+              '<div>' +
+              '<div style="display: inline-flex; align-items: center; gap: 6px; background: #0a1628; color: #d4a843; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px;">' +
+              '🏦 REKENING RESMI DH TRAVEL</div>' +
+              '<div style="font-size: 1rem; font-weight: 800; color: #0a1628; margin-bottom: 10px;">Total Transfer: <span style="color: #b8912e;">' + totalRp + '</span></div>' +
+              '<div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem;">' +
+              '<div style="background: #eff6ff; border: 2px solid #3b82f6; border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">' +
+              '<div>' +
+              '<div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA" style="height: 18px;"> <strong style="color: #1e40af;">BCA (Bank Central Asia)</strong></div>' +
+              '<div style="font-size: 1rem; font-weight: 900; font-family: monospace; color: #0a1628; letter-spacing: 1px;">0501199302</div>' +
+              '<small style="color: #64748b;">a.n. DH TRAVEL</small></div>' +
+              '<button onclick="navigator.clipboard.writeText(\'0501199302\'); this.innerHTML=\'✅ Disalin\';" style="padding: 7px 12px; font-size: 0.76rem; border-radius: 6px; border: none; background: #2563eb; color: white; cursor: pointer; font-weight: 800; flex-shrink: 0;">📋 Salin</button>' +
+              '</div>' +
+              '</div>' +
+              '<div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 8px 12px; font-size: 0.75rem; color: #9a3412; margin-top: 4px;">' +
+              '⚠️ Setelah transfer, kirim bukti + kode booking ke WhatsApp CS: <strong>0896-7196-9214</strong>' +
+              '</div>' +
+              '</div>';
+          } else {
+            pInfo.innerHTML =
+              '<div style="text-align: center;">' +
+              '<div style="display: inline-flex; align-items: center; gap: 6px; background: #16a34a; color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px;">' +
+              '💵 BAYAR TUNAI KE SOPIR (COD)</div>' +
+              '<div style="font-size: 1.1rem; font-weight: 800; color: #0a1628; margin-bottom: 6px;">Siapkan: ' + totalRp + '</div>' +
+              '<p style="font-size: 0.82rem; color: #475569; margin: 0;">Bayar langsung ke sopir saat penjemputan. Siapkan uang pas agar lebih mudah.</p>' +
+              '</div>';
+          }
+
           document.getElementById('bookingModal').classList.add('active');
           document.getElementById('bookingForm').reset();
           updateSummary();

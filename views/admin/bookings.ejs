@@ -33,40 +33,71 @@
           ${bookings.length === 0 ? '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: var(--gray-500);">Belum ada data pemesanan</td></tr>' : ''}
           ${bookings.map(b => `
             <tr>
-              <td><strong style="color: var(--navy-800); font-family: var(--font-primary);">${b.booking_code}</strong></td>
-              <td>
-                <div style="font-weight: 600;">${b.passenger_name} (${b.passenger_count} org)</div>
-                <div style="font-size: 0.8rem; color: var(--gray-500);"><a href="https://wa.me/62${b.passenger_phone.replace(/^0/, '')}" target="_blank" style="color: #25D366; font-weight: 600;">📱 ${b.passenger_phone}</a></div>
+              <td style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0 !important; padding-bottom: 6px !important; margin-bottom: 4px;">
+                <strong style="color: var(--navy-900); font-family: monospace; font-size: 0.95rem; letter-spacing: 0.5px;">${b.booking_code}</strong>
+                <span style="font-size: 0.76rem; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; color: var(--navy-700); font-weight: 600;">📅 ${b.travel_date}</span>
               </td>
               <td>
-                <div style="font-weight: 600;">${b.origin} → ${b.destination}</div>
-                <div style="font-size: 0.8rem; color: var(--gray-500);">${b.departure_time} WIB (Via ${b.via})</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                  <strong style="color: var(--navy-900); font-size: 0.88rem;">👤 ${b.passenger_name} <span style="font-weight: normal; color: var(--gray-600);">(${b.passenger_count} org)</span></strong>
+                  <a href="https://wa.me/62${b.passenger_phone.replace(/^0/, '').replace(/[^0-9]/g, '')}" target="_blank" style="color: #25D366; font-weight: 700; text-decoration: none; font-size: 0.8rem;">
+                    📱 ${b.passenger_phone} ↗
+                  </a>
+                </div>
               </td>
-              <td>${b.travel_date}</td>
-              <td style="max-width: 240px; font-size: 0.8rem;">
+              <td>
+                <div style="font-size: 0.82rem; color: var(--navy-800);">
+                  📍 <strong>${b.origin} → ${b.destination}</strong> • <span style="color: var(--gold-600); font-weight: 600;">${b.departure_time} WIB</span> (Via ${b.via})
+                </div>
+              </td>
+              <td style="font-size: 0.78rem; color: var(--gray-700); background: #f8fafc; padding: 6px 8px !important; border-radius: 6px; margin: 4px 0;">
+                <div><strong>Jemput:</strong> ${b.pickup_address} ${b.pickup_zone === 'kabupaten' ? '<span style="background: #fff3cd; color: #856404; padding: 1px 5px; border-radius: 3px; font-size: 0.68rem; font-weight: 700;">Kab (+20rb)</span>' : ''}</div>
+                <div><strong>Tujuan:</strong> ${b.dropoff_address} ${b.dropoff_zone === 'kabupaten' ? '<span style="background: #fff3cd; color: #856404; padding: 1px 5px; border-radius: 3px; font-size: 0.68rem; font-weight: 700;">Kab (+20rb)</span>' : ''}</div>
+                ${b.extra_fee && b.extra_fee > 0 ? '<div style="color: #b8912e; font-weight: 600; font-size: 0.72rem;">Tambahan Luar Kota: +Rp' + b.extra_fee.toLocaleString('id-ID') + '</div>' : ''}
+                ${b.notes ? '<div style="color: var(--gold-600); font-size: 0.72rem;"><em>Catatan: ' + b.notes + '</em></div>' : ''}
+              </td>
+              <td style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px !important; flex-wrap: wrap; gap: 4px;">
                 <div>
-                  <strong>Jemput:</strong> ${b.pickup_address}
-                  ${b.pickup_zone === 'kabupaten' ? '<span style="background: #fff3cd; color: #856404; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">Kabupaten (+20rb)</span>' : ''}
+                  <span style="font-size: 0.76rem; color: var(--gray-600);">Metode:</span>
+                  <strong style="color: var(--navy-900); font-size: 0.8rem;">
+                    ${b.payment_method === 'qris' ? '📱 QRIS' : b.payment_method === 'transfer' ? '🏦 BCA' : '💵 Bayar Sopir'}
+                  </strong>
                 </div>
                 <div>
-                  <strong>Tujuan:</strong> ${b.dropoff_address}
-                  ${b.dropoff_zone === 'kabupaten' ? '<span style="background: #fff3cd; color: #856404; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">Kabupaten (+20rb)</span>' : ''}
+                  <span style="font-size: 0.76rem; color: var(--gray-600);">Total:</span>
+                  <strong style="color: var(--gold-600); font-size: 0.95rem;">Rp${b.total_price.toLocaleString('id-ID')}</strong>
                 </div>
-                ${b.extra_fee && b.extra_fee > 0 ? '<div style="color: #b8912e; font-size: 0.75rem;"><strong>Biaya Luar Kota:</strong> +Rp' + b.extra_fee.toLocaleString('id-ID') + '</div>' : ''}
-                ${b.notes ? '<div style="color: var(--gold-600);"><strong>Catatan:</strong> ' + b.notes + '</div>' : ''}
               </td>
-              <td><strong style="color: var(--gold-600);">Rp${b.total_price.toLocaleString('id-ID')}</strong></td>
-              <td>
-                <select style="padding: 4px 8px; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600;" onchange="updateStatus(${b.id}, this.value)">
-                  <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
-                  <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>✅ Confirmed</option>
-                  <option value="completed" ${b.status === 'completed' ? 'selected' : ''}>🏁 Completed</option>
-                  <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
-                </select>
-              </td>
-              <td>
-                <div class="actions">
-                  <button class="btn-delete" onclick="deleteBooking(${b.id})">Hapus</button>
+              <td style="margin-top: 6px; background: #f8fafc; padding: 8px !important; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span style="font-size: 0.74rem; font-weight: 700; color: var(--navy-900);">🛰️ Izin GPS Pelanggan:</span>
+                  <button onclick="toggleGpsPermission(${b.id}, this)" style="padding: 3px 8px; font-size: 0.72rem; border-radius: 4px; font-weight: 800; cursor: pointer; border: 1px solid ${b.is_gps_allowed !== 0 ? '#86efac' : '#fca5a5'}; background: ${b.is_gps_allowed !== 0 ? '#dcfce7' : '#fee2e2'}; color: ${b.is_gps_allowed !== 0 ? '#166534' : '#991b1b'};">
+                    ${b.is_gps_allowed !== 0 ? '🟢 GPS Aktif' : '🔴 GPS Nonaktif'}
+                  </button>
+                </div>
+                
+                <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px;">
+                  <select style="flex: 1; padding: 5px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; border: 1px solid var(--gray-300); background: ${b.payment_status === 'paid' ? '#dcfce7' : b.payment_status === 'cod' ? '#fef3c7' : '#fee2e2'};" onchange="updatePaymentStatus(${b.id}, this.value)">
+                    <option value="pending" ${b.payment_status === 'pending' ? 'selected' : ''}>⏳ Belum Bayar</option>
+                    <option value="paid" ${b.payment_status === 'paid' ? 'selected' : ''}>✅ Lunas</option>
+                    <option value="cod" ${b.payment_status === 'cod' ? 'selected' : ''}>💵 Bayar di Sopir</option>
+                  </select>
+                  
+                  <select style="flex: 1; padding: 5px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; border: 1px solid var(--gray-300); background: ${b.status === 'confirmed' ? '#e8f5e9' : b.status === 'completed' ? '#e3f2fd' : b.status === 'cancelled' ? '#ffebee' : '#fff8e1'};" onchange="updateStatus(${b.id}, this.value)">
+                    <option value="pending" ${b.status === 'pending' ? 'selected' : ''}>Pending</option>
+                    <option value="confirmed" ${b.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                    <option value="completed" ${b.status === 'completed' ? 'selected' : ''}>Completed</option>
+                    <option value="cancelled" ${b.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                  </select>
+                </div>
+
+                <div style="display: flex; gap: 6px; justify-content: space-between;">
+                  <a href="https://wa.me/6281918401858?text=${encodeURIComponent('Halo Mas Zidan, ini link aktifkan GPS untuk trip ' + b.booking_code + ': http://localhost:3000/driver?id=1')}" target="_blank" style="padding: 4px 8px; font-size: 0.7rem; background: #25D366; color: white; border-radius: 4px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                    📱 Kirim ke Sopir
+                  </a>
+                  <button class="btn-delete" onclick="deleteBooking(${b.id})" style="padding: 4px 8px; font-size: 0.7rem; background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer; font-weight: 700;">
+                    🗑️ Hapus
+                  </button>
                 </div>
               </td>
             </tr>
@@ -85,10 +116,50 @@
           body: JSON.stringify({ status })
         });
         if (res.ok) {
-          alert('Status berhasil diperbarui!');
+          alert('Status pesanan berhasil diupdate!');
         }
       } catch (err) {
         alert('Gagal memperbarui status');
+      }
+    }
+
+    async function updatePaymentStatus(id, payment_status) {
+      try {
+        const res = await fetch('/admin/bookings/' + id + '/payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payment_status })
+        });
+        if (res.ok) {
+          alert('Status pembayaran berhasil diupdate!');
+        }
+      } catch (err) {
+        alert('Gagal memperbarui status pembayaran');
+      }
+    }
+
+    async function toggleGpsPermission(id, btn) {
+      try {
+        const res = await fetch('/admin/bookings/' + id + '/gps-toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (data.is_gps_allowed !== 0) {
+            btn.innerHTML = '🟢 GPS Aktif';
+            btn.style.background = '#dcfce7';
+            btn.style.color = '#166534';
+            btn.style.borderColor = '#86efac';
+          } else {
+            btn.innerHTML = '🔴 GPS Nonaktif';
+            btn.style.background = '#fee2e2';
+            btn.style.color = '#991b1b';
+            btn.style.borderColor = '#fca5a5';
+          }
+        }
+      } catch (err) {
+        alert('Gagal mengubah izin GPS');
       }
     }
 

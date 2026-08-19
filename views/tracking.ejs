@@ -20,21 +20,41 @@
   <section class="section">
     <div class="container">
       <!-- Search Booking Code Card -->
-      <div class="card animate-on-scroll" style="padding: 1.5rem 2rem; margin-bottom: 2rem; border-top: 4px solid var(--gold-500);">
-        <form method="GET" action="/tracking" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 260px;">
-            <label style="font-size: 0.85rem; font-weight: 700; color: var(--navy-800); margin-bottom: 6px; display: block;">
-              Masukkan Kode Booking / Cek Simulasi:
+      <div class="card animate-on-scroll" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; border-top: 4px solid var(--gold-500);">
+        <form method="GET" action="/tracking" style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 220px;">
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--navy-800); margin-bottom: 4px; display: block;">
+              Masukkan Kode Booking Tiket:
             </label>
-            <input type="text" class="form-control" name="code" value="${searchCode || (booking ? booking.booking_code : 'DH-20260820-101')}" placeholder="Contoh: DH-20260820-101" style="text-transform: uppercase; font-weight: 600; font-size: 1rem;">
+            <input type="text" class="form-control" name="code" value="${searchCode || (trackingData ? trackingData.booking.booking_code : 'DH-20260820-101')}" placeholder="Contoh: DH-20260820-101" style="text-transform: uppercase; font-weight: 700; font-size: 0.95rem;">
           </div>
           <div style="align-self: flex-end;">
-            <button type="submit" class="btn btn-primary btn-lg" style="height: 50px;">
+            <button type="submit" class="btn btn-primary" style="height: 42px; padding: 0 18px; font-weight: 700;">
               🛰️ Lacak Posisi Mobil
             </button>
           </div>
         </form>
-        ${error ? '<div class="error-message" style="margin-top: 1rem;">⚠️ ' + error + '</div>' : ''}
+        ${error ? '<div class="error-message" style="margin-top: 0.75rem;">⚠️ ' + error + '</div>' : ''}
+      </div>
+
+      ${trackingData ? `
+      <!-- GPS Status Notice (Online vs Offline) -->
+      <div id="gpsStatusBanner" style="background: ${trackingData.gps.is_online ? 'linear-gradient(135deg, #052e16, #14532d)' : 'linear-gradient(135deg, #450a0a, #7f1d1d)'}; color: white; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.8rem;">${trackingData.gps.is_online ? '🟢' : '📡'}</span>
+          <div>
+            <h3 style="font-size: 0.98rem; margin: 0; color: white;">
+              Status GPS: <span id="statusTextTitle">${trackingData.gps.is_online ? 'LIVE REAL-TIME (HP Driver Aktif)' : 'STANDBY / BELUM DIAKTIFKAN DRIVER'}</span>
+            </h3>
+            <p id="statusTextDesc" style="font-size: 0.78rem; margin: 3px 0 0; color: rgba(255,255,255,0.85);">
+              ${trackingData.gps.is_online ? 'Lokasi terpantau langsung dari sensor GPS ponsel driver.' : 'Driver akan mengaktifkan GPS di HP saat mulai meluncur ke alamat Anda.'}
+            </p>
+          </div>
+        </div>
+
+        <a href="https://wa.me/62${trackingData.driver.phone.replace(/^0/, '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Halo ' + trackingData.driver.name + ', saya penumpang booking kode ' + trackingData.booking.booking_code + ' mau tanya estimasi penjemputan.')}" target="_blank" class="btn btn-whatsapp" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 20px;">
+          💬 Chat Driver (${trackingData.driver.name.split(' ')[0]})
+        </a>
       </div>
 
       <!-- Tracking Layout -->
@@ -43,10 +63,10 @@
         <div>
           <div class="card" style="overflow: hidden; box-shadow: var(--shadow-lg); border-radius: var(--radius-lg);">
             <!-- Map Status Bar -->
-            <div style="background: linear-gradient(135deg, var(--navy-900), var(--navy-800)); color: white; padding: 1rem 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="background: linear-gradient(135deg, var(--navy-950), var(--navy-800)); color: white; padding: 0.85rem 1.1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #2ecc71; animation: pulse 1.5s infinite;"></span>
-                <strong style="font-size: 0.88rem;">GPS: ONLINE (LIVE REAL-TIME)</strong>
+                <span id="liveDot" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: ${trackingData.gps.is_online ? '#22c55e' : '#ef4444'};"></span>
+                <strong id="liveStatusTag" style="font-size: 0.85rem;">${trackingData.gps.is_online ? 'GPS: ONLINE' : 'GPS: STANDBY'}</strong>
               </div>
               <div style="font-size: 0.78rem; color: var(--gold-400);">
                 📡 Update: <span id="lastUpdate">Baru saja</span>
@@ -54,31 +74,28 @@
             </div>
 
             <!-- Interactive Map Container -->
-            <div id="gpsMap" style="height: 360px; width: 100%; background: #e5e3df; z-index: 1;"></div>
+            <div id="gpsMap" style="height: 340px; width: 100%; background: #e5e3df; z-index: 1;"></div>
 
             <!-- Map Controls & Progress -->
             <div style="padding: 1rem 1.2rem; background: white; border-top: 1px solid var(--gray-200);">
               <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px;">
-                <span style="color: var(--navy-800);">🏁 Progres Perjalanan</span>
-                <span style="color: var(--gold-600);" id="progressText">65% (Sedang Melaju)</span>
-              </div>
-              <div style="width: 100%; height: 8px; background: var(--gray-200); border-radius: 6px; overflow: hidden;">
-                <div id="progressBar" style="width: 65%; height: 100%; background: linear-gradient(90deg, var(--navy-700), var(--gold-500)); border-radius: 6px; transition: width 0.5s ease;"></div>
+                <span style="color: var(--navy-800);">🏁 Rute: ${trackingData.booking.origin} → ${trackingData.booking.destination}</span>
+                <span style="color: var(--gold-600);" id="progressText">${trackingData.booking.departure_time} WIB (Via ${trackingData.booking.via})</span>
               </div>
 
               <!-- Live Route Checkpoints -->
               <div class="checkpoint-grid">
                 <div style="padding: 6px; background: #e8f5e9; border-radius: 4px; color: #2e7d32; font-weight: 600;">
-                  ✓ Mojokerto
+                  ✓ ${trackingData.booking.origin}
                 </div>
                 <div style="padding: 6px; background: #e8f5e9; border-radius: 4px; color: #2e7d32; font-weight: 600;">
-                  ✓ Tol Gempol
+                  ✓ ${trackingData.booking.via}
                 </div>
                 <div style="padding: 6px; background: #fff8e1; border-radius: 4px; color: #f57f17; font-weight: 700; border: 1px solid #ffd54f;">
-                  🚗 Pandaan (Kini)
+                  🚗 Sedang Berjalan
                 </div>
                 <div style="padding: 6px; background: var(--gray-100); border-radius: 4px; color: var(--gray-600);">
-                  📍 Malang (Tujuan)
+                  📍 ${trackingData.booking.destination}
                 </div>
               </div>
             </div>
@@ -86,147 +103,169 @@
         </div>
 
         <!-- Right: Driver & Trip Status Panel -->
-        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
           <!-- Driver Info Card -->
-          <div class="card" style="padding: 1.5rem; border-top: 4px solid var(--navy-800);">
-            <h3 style="font-size: 1.1rem; color: var(--navy-800); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+          <div class="card" style="padding: 1.25rem; border-top: 4px solid var(--navy-800);">
+            <h3 style="font-size: 1rem; color: var(--navy-800); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px;">
               👨‍✈️ Driver Bertugas
             </h3>
 
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem;">
-              <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-800), var(--gold-500)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700;">
-                ZD
+            <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem;">
+              <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--navy-800), var(--gold-500)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800;">
+                👨‍✈️
               </div>
               <div>
-                <h4 style="font-size: 1.05rem; color: var(--navy-900);">Mas Zidan (Driver 1)</h4>
-                <p style="font-size: 0.8rem; color: var(--gray-600);">Driver Profesional Berpengalaman • DH Trans</p>
-                <div style="margin-top: 2px; font-size: 0.8rem; color: #2ecc71; font-weight: 600;">
-                  ★ 4.9 / 5.0 (200+ Trip Selesai)
+                <h4 style="font-size: 0.95rem; color: var(--navy-900); margin: 0;">${trackingData.driver.name}</h4>
+                <p style="font-size: 0.78rem; color: var(--gray-600); margin: 2px 0 0;">${trackingData.driver.phone}</p>
+                <div style="margin-top: 2px; font-size: 0.78rem; color: #16a34a; font-weight: 700;">
+                  ★ 4.9 / 5.0 (Driver Terverifikasi)
                 </div>
               </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.2rem;">
-              <a href="https://wa.me/6281918401858?text=Halo%20Mas%20Zidan%20(Driver%201%20DH%20Trans),%20saya%20ingin%20tanya%20posisi%20jemputan." target="_blank" class="btn btn-whatsapp btn-sm btn-full">
-                💬 Hubungi Driver 1 (Zidan): 0819-1840-1858
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <a href="https://wa.me/62${trackingData.driver.phone.replace(/^0/, '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Halo ' + trackingData.driver.name + ', saya penumpang travel DH Trans.')}" target="_blank" class="btn btn-whatsapp btn-sm btn-full">
+                💬 Hubungi Driver via WhatsApp
               </a>
-              <a href="https://wa.me/628972681444?text=Halo%20Mas%20Hervin%20(Driver%202%20DH%20Trans),%20saya%20ingin%20tanya%20posisi%20jemputan." target="_blank" class="btn btn-whatsapp btn-sm btn-full" style="background: #128C7E;">
-                💬 Hubungi Driver 2 (Hervin): 0897-2681-444
+              <a href="tel:${trackingData.driver.phone}" class="btn btn-outline btn-sm btn-full" style="color: var(--navy-900); border-color: var(--gray-300);">
+                📞 Telepon Langsung Driver
               </a>
             </div>
           </div>
 
           <!-- Vehicle & Telemetry Card -->
-          <div class="card" style="padding: 1.5rem; background: linear-gradient(135deg, var(--navy-900), var(--navy-800)); color: white;">
-            <h3 style="font-size: 1.05rem; color: var(--gold-400); margin-bottom: 1rem;">
+          <div class="card" style="padding: 1.25rem; background: linear-gradient(135deg, var(--navy-950), var(--navy-800)); color: white;">
+            <h3 style="font-size: 0.95rem; color: var(--gold-400); margin-bottom: 0.75rem;">
               🚘 Data Armada & Telemetri
             </h3>
 
-            <div style="display: grid; gap: 0.8rem; font-size: 0.88rem;">
-              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: grid; gap: 0.65rem; font-size: 0.82rem;">
+              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding: 4px 0;">
                 <span style="color: rgba(255,255,255,0.6);">Jenis Mobil</span>
-                <strong style="color: white;">Toyota All New Veloz (Hitam)</strong>
+                <strong style="color: white;">${trackingData.driver.car}</strong>
               </div>
-              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding: 4px 0;">
                 <span style="color: rgba(255,255,255,0.6);">Nomor Polisi</span>
-                <strong style="color: var(--gold-400); font-family: var(--font-primary);">W 1234 DH</strong>
+                <strong style="color: var(--gold-400); font-family: monospace;">${trackingData.driver.plate}</strong>
               </div>
-              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <span style="color: rgba(255,255,255,0.6);">Kecepatan Rata-rata</span>
-                <strong style="color: #2ecc71;">78 km/jam (Tol)</strong>
+              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding: 4px 0;">
+                <span style="color: rgba(255,255,255,0.6);">Kecepatan Terkini</span>
+                <strong id="cardSpeed" style="color: #4ade80;">${trackingData.gps.speed} km/jam</strong>
               </div>
-              <div class="summary-row" style="border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <span style="color: rgba(255,255,255,0.6);">Estimasi Tiba (ETA)</span>
-                <strong style="color: var(--gold-300);">~35 Menit lagi</strong>
-              </div>
-              <div class="summary-row">
-                <span style="color: rgba(255,255,255,0.6);">Kondisi Rute</span>
-                <strong style="color: #2ecc71;">Lancar via Tol Gempol</strong>
+              <div class="summary-row" style="padding: 4px 0;">
+                <span style="color: rgba(255,255,255,0.6);">Status GPS</span>
+                <strong id="cardGpsStatus" style="color: ${trackingData.gps.is_online ? '#4ade80' : '#f87171'};">
+                  ${trackingData.gps.is_online ? 'Live dari HP Driver' : 'Standby / Offline'}
+                </strong>
               </div>
             </div>
           </div>
 
-          <!-- CS Support -->
-          <div class="card" style="padding: 1.2rem; text-align: center;">
-            <p style="font-size: 0.85rem; color: var(--gray-600); margin-bottom: 8px;">Ada kendala atau perubahan titik jemput?</p>
-            <a href="https://wa.me/6289671969214?text=Halo%20CS%20DH%20Trans,%20saya%20butuh%20bantuan%20terkait%20penjemputan." target="_blank" class="btn btn-outline btn-sm btn-full">
-              📱 Hubungi Customer Service (24 Jam)
+          <!-- Driver Portal Link for Testing -->
+          <div style="text-align: center; padding: 0.5rem;">
+            <a href="/driver?id=${trackingData.driver.id}" target="_blank" style="font-size: 0.76rem; color: var(--navy-600); text-decoration: underline;">
+              📱 Buka Portal HP Driver (Untuk Driver Mengaktifkan GPS) ↗
             </a>
           </div>
         </div>
       </div>
+      ` : ''}
+
     </div>
   </section>
 
+  ${trackingData ? `
   <script>
-    // Initialize Leaflet Live GPS Map
     document.addEventListener('DOMContentLoaded', function() {
-      // Mojokerto to Malang Route Waypoints
+      const bookingCode = '${trackingData.booking.booking_code}';
+      let currentLat = ${trackingData.gps.lat || -7.6536};
+      let currentLng = ${trackingData.gps.lng || 112.6917};
+      let isGpsOnline = ${trackingData.gps.is_online ? 'true' : 'false'};
+
+      const map = L.map('gpsMap').setView([currentLat, currentLng], 11);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap | DH Trans GPS'
+      }).addTo(map);
+
+      // Route Waypoints
       const routePoints = [
-        [-7.4726, 112.4381], // Mojokerto Kota (Alun-Alun / Terminal)
+        [-7.4726, 112.4381], // Mojokerto
         [-7.5412, 112.5830], // Mojosari
-        [-7.5925, 112.6953], // Masuk Gerbang Tol Gempol
-        [-7.6536, 112.6917], // Rest Area Tol Pandaan (Current Pos)
-        [-7.7540, 112.7120], // Exit Purwosari
+        [-7.5925, 112.6953], // Gerbang Tol Gempol
+        [-7.6536, 112.6917], // Pandaan
+        [-7.7540, 112.7120], // Purwosari
         [-7.8340, 112.6980], // Lawang
         [-7.8890, 112.6680], // Singosari
-        [-7.9420, 112.6480], // Arjosari Malang
-        [-7.9797, 112.6304]  // Alun-Alun Kota Malang
+        [-7.9797, 112.6304]  // Malang
       ];
 
-      const map = L.map('gpsMap').setView([-7.6536, 112.6917], 10);
-
-      // OpenStreetMap Tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors | DH Trans GPS'
-      }).addTo(map);
-
-      // Draw Route Polyline
-      const polyline = L.polyline(routePoints, {
+      L.polyline(routePoints, {
         color: '#0a1628',
-        weight: 5,
-        opacity: 0.85,
-        dashArray: '8, 8'
+        weight: 4,
+        opacity: 0.7,
+        dashArray: '6, 6'
       }).addTo(map);
 
-      // Origin Marker (Mojokerto)
-      L.marker([-7.4726, 112.4381]).addTo(map)
-        .bindPopup('<b>📍 Asal: Mojokerto</b><br>Titik Awal Keberangkatan');
+      // Start & Finish Markers
+      L.marker([-7.4726, 112.4381]).addTo(map).bindPopup('<b>📍 Asal: Mojokerto</b>');
+      L.marker([-7.9797, 112.6304]).addTo(map).bindPopup('<b>🏁 Tujuan: Malang</b>');
 
-      // Destination Marker (Malang)
-      L.marker([-7.9797, 112.6304]).addTo(map)
-        .bindPopup('<b>🏁 Tujuan: Malang</b><br>Titik Akhir Kedatangan');
-
-      // Custom Animated Car Icon
+      // Live Car Icon
       const carIcon = L.divIcon({
         className: 'custom-car-icon',
-        html: '<div style="background: #0a1628; border: 3px solid #d4a843; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212,168,67,0.8); font-size: 1.2rem;">🚗</div>',
-        iconSize: [38, 38],
-        iconAnchor: [19, 19]
+        html: '<div style="background: #0a1628; border: 2.5px solid #d4a843; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(212,168,67,0.8); font-size: 1.1rem;">🚗</div>',
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
       });
 
-      // Car Marker on current location (Tol Pandaan)
-      let currentStep = 3;
-      const carMarker = L.marker(routePoints[currentStep], { icon: carIcon }).addTo(map)
-        .bindPopup('<b>🚐 Posisi Armada DH Trans</b><br>Tol Pandaan KM 48 (Kecepatan: 78 km/jam)<br>Driver: Mas Zidan (Driver 1)')
-        .openPopup();
+      const carMarker = L.marker([currentLat, currentLng], { icon: carIcon }).addTo(map)
+        .bindPopup('<b>🚐 Armada DH Trans</b><br>Driver: ${trackingData.driver.name}<br>Status: ' + (isGpsOnline ? 'Live Real-Time' : 'Standby'));
 
-      // Smooth Car Animation Simulation
-      setInterval(function() {
-        currentStep = (currentStep + 1) % routePoints.length;
-        if (currentStep === 0) currentStep = 1;
-        
-        const nextPos = routePoints[currentStep];
-        carMarker.setLatLng(nextPos);
+      if (isGpsOnline) carMarker.openPopup();
 
-        const pct = Math.round((currentStep / (routePoints.length - 1)) * 100);
-        document.getElementById('progressBar').style.width = pct + '%';
-        document.getElementById('progressText').textContent = pct + '% (Sedang Melaju)';
-        
-        const now = new Date();
-        document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('id-ID') + ' WIB';
-      }, 5000);
+      // Poll real driver GPS from server every 4 seconds
+      setInterval(async () => {
+        try {
+          const res = await fetch('/api/tracking/live/' + bookingCode);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.gps) {
+              const newLat = data.gps.lat;
+              const newLng = data.gps.lng;
+              const isOnline = data.gps.is_online;
+              
+              carMarker.setLatLng([newLat, newLng]);
+              if (isOnline) {
+                map.panTo([newLat, newLng]);
+              }
+
+              document.getElementById('cardSpeed').textContent = data.gps.speed + ' km/jam';
+              document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('id-ID') + ' WIB';
+              
+              const liveDot = document.getElementById('liveDot');
+              const liveTag = document.getElementById('liveStatusTag');
+              const cardStatus = document.getElementById('cardGpsStatus');
+              
+              if (isOnline) {
+                liveDot.style.background = '#22c55e';
+                liveTag.textContent = 'GPS: ONLINE';
+                cardStatus.textContent = 'Live dari HP Driver (' + data.gps.speed + ' km/h)';
+                cardStatus.style.color = '#4ade80';
+              } else {
+                liveDot.style.background = '#ef4444';
+                liveTag.textContent = 'GPS: STANDBY';
+                cardStatus.textContent = 'Standby / Offline';
+                cardStatus.style.color = '#f87171';
+              }
+            }
+          }
+        } catch (e) {
+          console.error('GPS poll error:', e);
+        }
+      }, 4000);
     });
   </script>
+  ` : ''}
 
 ` }) %>
