@@ -59,10 +59,25 @@
             </div>
 
             <div class="form-group">
-              <label for="schedule_id">Pilih Jadwal & Rute Keberangkatan *</label>
-              <select class="form-control" id="schedule_id" name="schedule_id" required onchange="updateSummary()">
-                ${schedules.map((s, idx) => '<option value="' + s.id + '" data-price="' + s.price + '" data-origin="' + s.origin + '" data-destination="' + s.destination + '" data-time="' + s.departure_time + '" data-via="' + s.via + '" ' + (selectedSchedule ? (selectedSchedule == s.id ? 'selected' : '') : (idx === 0 ? 'selected' : '')) + '>' + s.origin + ' → ' + s.destination + ' | ' + s.departure_time + ' WIB | Via ' + s.via + ' | Rp' + s.price.toLocaleString("id-ID") + '/org</option>').join('')}
-              </select>
+              <label>Pilih Jadwal & Rute Keberangkatan *</label>
+              <!-- Hidden input for form submission -->
+              <input type="hidden" id="schedule_id" name="schedule_id" value="${schedules[0] ? schedules[0].id : ''}">
+
+              <!-- Clickable Schedule Cards -->
+              <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+                ${schedules.map((s, idx) => `
+                <label id="schedCard_${s.id}" onclick="selectSchedule(${s.id})" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 2px solid ${idx === 0 ? '#d4a843' : '#e2e8f0'}; border-radius: 10px; background: ${idx === 0 ? 'rgba(212,168,67,0.09)' : 'white'}; cursor: pointer; transition: all 0.2s ease; flex-wrap: wrap; gap: 6px;">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="_sched_radio" value="${s.id}" ${idx === 0 ? 'checked' : ''} style="accent-color: #d4a843; width: 16px; height: 16px;">
+                    <div>
+                      <div style="font-weight: 700; font-size: 0.92rem; color: #0a1628;">${s.origin} → ${s.destination}</div>
+                      <div style="font-size: 0.8rem; color: #64748b;">🕐 ${s.departure_time} WIB · Via ${s.via}</div>
+                    </div>
+                  </div>
+                  <div style="font-weight: 800; font-size: 1rem; color: #b8912e;">Rp${s.price.toLocaleString('id-ID')}<span style="font-size: 0.75rem; font-weight: 600; color: #94a3b8;">/org</span></div>
+                </label>
+                `).join('')}
+              </div>
 
               <!-- Live Seat Status Indicator -->
               <div id="seatStatusIndicator" style="margin-top: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; font-weight: 600;">
@@ -333,7 +348,7 @@
 
   <script>
     const schedulesData = ${JSON.stringify(schedules)};
-    const scheduleSelect = document.getElementById('schedule_id');
+    const scheduleSelect = document.getElementById('schedule_id'); // hidden input
     const passengerCount = document.getElementById('passenger_count');
     const travelDate = document.getElementById('travel_date');
     const submitBtn = document.getElementById('submitBooking');
@@ -451,8 +466,33 @@
       checkSeatAvailability();
     }
 
-    scheduleSelect.addEventListener('change', updateSummary);
-    scheduleSelect.addEventListener('input', updateSummary);
+    // Schedule card selection
+    function selectSchedule(id) {
+      // Update hidden input
+      const hiddenInput = document.getElementById('schedule_id');
+      hiddenInput.value = String(id);
+
+      // Update radio buttons
+      document.querySelectorAll('input[name="_sched_radio"]').forEach(r => {
+        r.checked = (String(r.value) === String(id));
+      });
+
+      // Update card visuals
+      schedulesData.forEach(s => {
+        const card = document.getElementById('schedCard_' + s.id);
+        if (!card) return;
+        if (String(s.id) === String(id)) {
+          card.style.border = '2px solid #d4a843';
+          card.style.background = 'rgba(212,168,67,0.09)';
+        } else {
+          card.style.border = '2px solid #e2e8f0';
+          card.style.background = 'white';
+        }
+      });
+
+      updateSummary();
+    }
+
     passengerCount.addEventListener('change', updateSummary);
     travelDate.addEventListener('change', updateSummary);
 
