@@ -196,7 +196,15 @@ app.post('/booking', (req, res) => {
         : '💵 Bayar Tunai ke Sopir (COD saat penjemputan)';
 
     // Build WhatsApp message
-    const waMessage = `Halo DH Trans! Saya ingin konfirmasi pemesanan tiket travel:\n\n` +
+    const introText = chosenPayment === 'cash'
+      ? 'Halo DH Trans! Saya ingin konfirmasi pemesanan tiket travel (Bayar di Sopir / COD):'
+      : 'Halo DH Trans! Saya ingin konfirmasi pemesanan tiket travel & melampirkan bukti bayar:';
+
+    const outroText = chosenPayment === 'cash'
+      ? 'Mohon konfirmasi penjemputan pesanan saya. Terima kasih! 🙏'
+      : 'Berikut saya lampirkan bukti transfer / pembayaran. Mohon konfirmasi pesanan saya. Terima kasih! 🙏';
+
+    const waMessage = `${introText}\n\n` +
       `📋 Kode Booking: ${bookingCode}\n` +
       `🛣️ Rute: ${schedule.origin} → ${schedule.destination}\n` +
       `📅 Tanggal: ${travel_date}\n` +
@@ -207,7 +215,7 @@ app.post('/booking', (req, res) => {
       `📍 Titik Antar: ${dropoffDesc}\n` +
       `💳 Metode Bayar: ${paymentLabel}\n\n` +
       `${feeBreakdown}\n\n` +
-      `Mohon konfirmasi pesanan saya. Terima kasih! 🙏`;
+      `${outroText}`;
 
     const waLink = `https://wa.me/6289671969214?text=${encodeURIComponent(waMessage)}`;
 
