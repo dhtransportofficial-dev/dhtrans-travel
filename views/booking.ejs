@@ -60,9 +60,8 @@
 
             <div class="form-group">
               <label for="schedule_id">Pilih Jadwal & Rute Keberangkatan *</label>
-              <select class="form-control" id="schedule_id" name="schedule_id" required>
-                <option value="">-- Pilih Jadwal --</option>
-                ${schedules.map(s => '<option value="' + s.id + '" data-price="' + s.price + '" data-origin="' + s.origin + '" data-destination="' + s.destination + '" data-time="' + s.departure_time + '" data-via="' + s.via + '" ' + (selectedSchedule == s.id ? 'selected' : '') + '>' + s.origin + ' → ' + s.destination + ' | ' + s.departure_time + ' WIB | Via ' + s.via + ' | Rp' + s.price.toLocaleString("id-ID") + '/org</option>').join('')}
+              <select class="form-control" id="schedule_id" name="schedule_id" required onchange="updateSummary()">
+                ${schedules.map((s, idx) => '<option value="' + s.id + '" data-price="' + s.price + '" data-origin="' + s.origin + '" data-destination="' + s.destination + '" data-time="' + s.departure_time + '" data-via="' + s.via + '" ' + (selectedSchedule ? (selectedSchedule == s.id ? 'selected' : '') : (idx === 0 ? 'selected' : '')) + '>' + s.origin + ' → ' + s.destination + ' | ' + s.departure_time + ' WIB | Via ' + s.via + ' | Rp' + s.price.toLocaleString("id-ID") + '/org</option>').join('')}
               </select>
 
               <!-- Live Seat Status Indicator -->
@@ -142,8 +141,8 @@
                 💳 Pilih Metode Pembayaran *
               </label>
               <div class="payment-selector-grid">
-                <label class="payment-card-opt selected">
-                  <input type="radio" name="payment_method" value="cash" checked onchange="updatePaymentMethod(this.value)">
+                <label class="payment-card-opt selected" onclick="updatePaymentMethod('cash')" style="cursor: pointer;">
+                  <input type="radio" name="payment_method" value="cash" checked onchange="updatePaymentMethod('cash')">
                   <span style="font-size: 1.4rem;">💵</span>
                   <div>
                     <strong style="display: block; color: var(--navy-900);">Bayar di Sopir</strong>
@@ -151,8 +150,8 @@
                   </div>
                 </label>
 
-                <label class="payment-card-opt">
-                  <input type="radio" name="payment_method" value="qris" onchange="updatePaymentMethod(this.value)">
+                <label class="payment-card-opt" onclick="updatePaymentMethod('qris')" style="cursor: pointer;">
+                  <input type="radio" name="payment_method" value="qris" onchange="updatePaymentMethod('qris')">
                   <span style="font-size: 1.4rem;">📱</span>
                   <div>
                     <strong style="display: block; color: var(--navy-900);">QRIS DH Travel</strong>
@@ -160,8 +159,8 @@
                   </div>
                 </label>
 
-                <label class="payment-card-opt">
-                  <input type="radio" name="payment_method" value="transfer" onchange="updatePaymentMethod(this.value)">
+                <label class="payment-card-opt" onclick="updatePaymentMethod('transfer')" style="cursor: pointer;">
+                  <input type="radio" name="payment_method" value="transfer" onchange="updatePaymentMethod('transfer')">
                   <span style="font-size: 1.4rem;">🏦</span>
                   <div>
                     <strong style="display: block; color: var(--navy-900);">Transfer BCA</strong>
@@ -176,10 +175,21 @@
               <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Contoh: Bawa koper besar, patokan depan masjid, butuh kursi tengah, dll."></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBooking">
+            <!-- Form Error Alert Container -->
+            <div id="bookingFormError" style="display: none; background: #fee2e2; border: 1.5px solid #f87171; color: #991b1b; padding: 12px 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.9rem; margin-bottom: 1rem;"></div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBooking" style="font-size: 1.05rem; padding: 14px 20px;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               Konfirmasi Pemesanan
             </button>
+
+            <!-- Quick WhatsApp Alternative Button -->
+            <div style="text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--gray-200);">
+              <span style="font-size: 0.82rem; color: var(--gray-600); display: block; margin-bottom: 6px;">Mau lebih cepat & tanpa isi form?</span>
+              <a href="https://wa.me/6289671969214?text=Halo%20CS%20DH%20Trans,%20saya%20mau%20pesan%20tiket%20travel%20Mojokerto%20-%20Malang." target="_blank" class="btn btn-whatsapp btn-full" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700;">
+                💬 Pesan Langsung via WhatsApp CS (0896-7196-9214)
+              </a>
+            </div>
           </form>
         </div>
 
@@ -329,7 +339,7 @@
 
     function getSelectedRadioValue(name) {
       const el = document.querySelector('input[name="' + name + '"]:checked');
-      return el ? el.value : 'kota';
+      return el ? el.value : (name === 'payment_method' ? 'cash' : 'kota');
     }
 
     async function checkSeatAvailability() {
@@ -432,8 +442,10 @@
     function updatePaymentMethod(val) {
       document.querySelectorAll('.payment-card-opt').forEach(el => el.classList.remove('selected'));
       const activeRadio = document.querySelector('input[name="payment_method"][value="' + val + '"]');
-      if (activeRadio && activeRadio.parentElement) {
-        activeRadio.parentElement.classList.add('selected');
+      if (activeRadio) {
+        activeRadio.checked = true;
+        const parentLabel = activeRadio.closest('.payment-card-opt');
+        if (parentLabel) parentLabel.classList.add('selected');
       }
 
       const labelMap = {
@@ -447,6 +459,9 @@
     // Form submit
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const errDiv = document.getElementById('bookingFormError');
+      errDiv.style.display = 'none';
+
       submitBtn.disabled = true;
       submitBtn.innerHTML = '⏳ Memproses Pesanan...';
 
@@ -528,10 +543,14 @@
           document.getElementById('bookingForm').reset();
           updateSummary();
         } else {
-          alert('Gagal Booking: ' + (data.error || 'Terjadi kesalahan'));
+          errDiv.textContent = '❌ Gagal Booking: ' + (data.error || 'Terjadi kesalahan');
+          errDiv.style.display = 'block';
+          errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       } catch (err) {
-        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
+        errDiv.textContent = '❌ Gangguan koneksi. Silakan coba lagi atau hubungi CS langsung via WhatsApp.';
+        errDiv.style.display = 'block';
+        errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
       submitBtn.disabled = false;

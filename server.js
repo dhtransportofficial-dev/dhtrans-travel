@@ -78,7 +78,7 @@ app.get('/booking', (req, res) => {
     ORDER BY r.id, s.departure_time
   `).all();
 
-  const selectedSchedule = req.query.schedule || '';
+  const selectedSchedule = req.query.schedule || (schedules.length > 0 ? schedules[0].id : '');
   res.render('booking', { schedules, selectedSchedule, page: 'booking' });
 });
 
