@@ -1297,6 +1297,37 @@ textarea.form-control {
   background: rgba(212, 168, 67, 0.08);
 }
 
+.zone-card-opt {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
+
+.zone-card-opt:hover {
+  border-color: #93c5fd;
+}
+
+.zone-card-opt.selected,
+.zone-card-opt:has(input[type="radio"]:checked) {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.zone-card-opt.zone-kabupaten.selected,
+.zone-card-opt.zone-kabupaten:has(input[type="radio"]:checked) {
+  border-color: #d97706;
+  background: #fffbeb;
+}
+
 @media (max-width: 768px) {
   .payment-selector-grid {
     grid-template-columns: 1fr;

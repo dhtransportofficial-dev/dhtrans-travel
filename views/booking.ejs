@@ -94,11 +94,11 @@
                   📍 Wilayah Penjemputan (Titik Jemput) *
                 </label>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 6px;">
-                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                  <label class="zone-card-opt selected" onclick="updateZoneStyle('pickup_zone', 'kota')">
                     <input type="radio" name="pickup_zone" value="kota" checked onchange="updateSummary()">
                     <span>🏙️ <strong>Dalam Kota</strong> (Tarif Normal)</span>
                   </label>
-                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                  <label class="zone-card-opt zone-kabupaten" onclick="updateZoneStyle('pickup_zone', 'kabupaten')">
                     <input type="radio" name="pickup_zone" value="kabupaten" onchange="updateSummary()">
                     <span>🏡 <strong>Wilayah Kabupaten</strong> (+Rp20rb/org)</span>
                   </label>
@@ -118,11 +118,11 @@
                   🏁 Wilayah Pengantaran (Titik Tujuan) *
                 </label>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 6px;">
-                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gray-200); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                  <label class="zone-card-opt selected" onclick="updateZoneStyle('dropoff_zone', 'kota')">
                     <input type="radio" name="dropoff_zone" value="kota" checked onchange="updateSummary()">
                     <span>🏙️ <strong>Dalam Kota</strong> (Tarif Normal)</span>
                   </label>
-                  <label style="flex: 1; min-width: 140px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: white; border: 2px solid var(--gold-400); border-radius: var(--radius-md); cursor: pointer; font-size: 0.88rem;">
+                  <label class="zone-card-opt zone-kabupaten" onclick="updateZoneStyle('dropoff_zone', 'kabupaten')">
                     <input type="radio" name="dropoff_zone" value="kabupaten" onchange="updateSummary()">
                     <span>🏡 <strong>Wilayah Kabupaten</strong> (+Rp20rb/org)</span>
                   </label>
@@ -454,6 +454,20 @@
         'transfer': '🏦 Transfer BCA'
       };
       document.getElementById('summaryPaymentMethod').textContent = labelMap[val] || '💵 Bayar di Sopir';
+    }
+
+    function updateZoneStyle(name, val) {
+      document.querySelectorAll('input[name="' + name + '"]').forEach(radio => {
+        const parent = radio.closest('.zone-card-opt');
+        if (parent) parent.classList.remove('selected');
+      });
+      const active = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
+      if (active) {
+        active.checked = true;
+        const parent = active.closest('.zone-card-opt');
+        if (parent) parent.classList.add('selected');
+      }
+      updateSummary();
     }
 
     // Form submit
