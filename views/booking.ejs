@@ -141,8 +141,8 @@
                 💳 Pilih Metode Pembayaran *
               </label>
               <div class="payment-selector-grid">
-                <label class="payment-card-opt selected" onclick="updatePaymentMethod('cash')" style="cursor: pointer;">
-                  <input type="radio" name="payment_method" value="cash" checked onchange="updatePaymentMethod('cash')">
+                <label class="payment-card-opt" onclick="updatePaymentMethod('cash')" style="cursor: pointer;">
+                  <input type="radio" name="payment_method" value="cash" checked onchange="updateSummary()">
                   <span style="font-size: 1.4rem;">💵</span>
                   <div>
                     <strong style="display: block; color: var(--navy-900);">Bayar di Sopir</strong>
@@ -151,7 +151,7 @@
                 </label>
 
                 <label class="payment-card-opt" onclick="updatePaymentMethod('qris')" style="cursor: pointer;">
-                  <input type="radio" name="payment_method" value="qris" onchange="updatePaymentMethod('qris')">
+                  <input type="radio" name="payment_method" value="qris" onchange="updateSummary()">
                   <span style="font-size: 1.4rem;">📱</span>
                   <div>
                     <strong style="display: block; color: var(--navy-900);">QRIS DH Travel</strong>
@@ -160,7 +160,7 @@
                 </label>
 
                 <label class="payment-card-opt" onclick="updatePaymentMethod('transfer')" style="cursor: pointer;">
-                  <input type="radio" name="payment_method" value="transfer" onchange="updatePaymentMethod('transfer')">
+                  <input type="radio" name="payment_method" value="transfer" onchange="updateSummary()">
                   <span style="font-size: 1.4rem;">🏦</span>
                   <div>
                     <strong style="display: block; color: var(--navy-900);">Transfer BCA</strong>
@@ -389,12 +389,24 @@
       const count = parseInt(passengerCount.value || 1);
       const pickupZone = getSelectedRadioValue('pickup_zone');
       const dropoffZone = getSelectedRadioValue('dropoff_zone');
+      const chosenPay = getSelectedRadioValue('payment_method');
+
+      // Update payment label in summary
+      const payMap = {
+        'cash': '💵 Bayar di Sopir',
+        'qris': '📱 QRIS DH Travel',
+        'transfer': '🏦 Transfer BCA'
+      };
+      const payElem = document.getElementById('summaryPaymentMethod');
+      if (payElem) {
+        payElem.textContent = payMap[chosenPay] || '💵 Bayar di Sopir';
+      }
 
       if (selected && selected.value) {
-        document.getElementById('summaryRoute').textContent = selected.dataset.origin + ' → ' + selected.dataset.destination;
-        document.getElementById('summaryTimeVia').textContent = selected.dataset.time + ' WIB (Via ' + selected.dataset.via + ')';
+        document.getElementById('summaryRoute').textContent = (selected.dataset.origin || 'Mojokerto') + ' → ' + (selected.dataset.destination || 'Malang');
+        document.getElementById('summaryTimeVia').textContent = (selected.dataset.time || '06:00') + ' WIB (Via ' + (selected.dataset.via || 'Tol') + ')';
         
-        const pricePerPax = parseInt(selected.dataset.price);
+        const pricePerPax = parseInt(selected.dataset.price || 150000);
         const baseTotal = pricePerPax * count;
         document.getElementById('summaryBasePrice').textContent = 'Rp' + baseTotal.toLocaleString('id-ID') + ' (' + count + ' org)';
         document.getElementById('summaryPassengers').textContent = count + ' orang';
@@ -424,9 +436,14 @@
       
       const dateVal = travelDate.value;
       if (dateVal) {
-        const d = new Date(dateVal);
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('summaryDate').textContent = d.toLocaleDateString('id-ID', options);
+        try {
+          const parts = dateVal.split('-');
+          const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+          document.getElementById('summaryDate').textContent = d.toLocaleDateString('id-ID', options);
+        } catch (e) {
+          document.getElementById('summaryDate').textContent = dateVal;
+        }
       }
 
       checkSeatAvailability();
@@ -435,40 +452,26 @@
     scheduleSelect.addEventListener('change', updateSummary);
     passengerCount.addEventListener('change', updateSummary);
     travelDate.addEventListener('change', updateSummary);
-    
-    // Trigger on load
-    updateSummary();
 
     function updatePaymentMethod(val) {
-      document.querySelectorAll('.payment-card-opt').forEach(el => el.classList.remove('selected'));
       const activeRadio = document.querySelector('input[name="payment_method"][value="' + val + '"]');
       if (activeRadio) {
         activeRadio.checked = true;
-        const parentLabel = activeRadio.closest('.payment-card-opt');
-        if (parentLabel) parentLabel.classList.add('selected');
-      }
-
-      const labelMap = {
-        'cash': '💵 Bayar di Sopir',
-        'qris': '📱 QRIS DH Travel',
-        'transfer': '🏦 Transfer BCA'
-      };
-      document.getElementById('summaryPaymentMethod').textContent = labelMap[val] || '💵 Bayar di Sopir';
-    }
-
-    function updateZoneStyle(name, val) {
-      document.querySelectorAll('input[name="' + name + '"]').forEach(radio => {
-        const parent = radio.closest('.zone-card-opt');
-        if (parent) parent.classList.remove('selected');
-      });
-      const active = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
-      if (active) {
-        active.checked = true;
-        const parent = active.closest('.zone-card-opt');
-        if (parent) parent.classList.add('selected');
       }
       updateSummary();
     }
+
+    function updateZoneStyle(name, val) {
+      const active = document.querySelector('input[name="' + name + '"][value="' + val + '"]');
+      if (active) {
+        active.checked = true;
+      }
+      updateSummary();
+    }
+
+    // Trigger on load
+    document.addEventListener('DOMContentLoaded', updateSummary);
+    updateSummary();
 
     // Form submit
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {

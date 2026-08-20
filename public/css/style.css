@@ -1291,10 +1291,9 @@ textarea.form-control {
   border-color: var(--gold-400);
 }
 
-.payment-card-opt.selected,
 .payment-card-opt:has(input[type="radio"]:checked) {
-  border-color: var(--gold-500);
-  background: rgba(212, 168, 67, 0.08);
+  border-color: var(--gold-500) !important;
+  background: rgba(212, 168, 67, 0.12) !important;
 }
 
 .zone-card-opt {
@@ -1316,16 +1315,14 @@ textarea.form-control {
   border-color: #93c5fd;
 }
 
-.zone-card-opt.selected,
 .zone-card-opt:has(input[type="radio"]:checked) {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
 }
 
-.zone-card-opt.zone-kabupaten.selected,
 .zone-card-opt.zone-kabupaten:has(input[type="radio"]:checked) {
-  border-color: #d97706;
-  background: #fffbeb;
+  border-color: #d97706 !important;
+  background: #fffbeb !important;
 }
 
 @media (max-width: 768px) {
