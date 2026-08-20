@@ -202,15 +202,15 @@
             </h3>
             <div class="summary-row">
               <span class="label">Rute</span>
-              <span class="value" id="summaryRoute">-</span>
+              <span class="value" id="summaryRoute">${schedules[0] ? schedules[0].origin + ' → ' + schedules[0].destination : 'Mojokerto → Malang'}</span>
             </div>
             <div class="summary-row">
               <span class="label">Jam & Via</span>
-              <span class="value" id="summaryTimeVia">-</span>
+              <span class="value" id="summaryTimeVia">${schedules[0] ? schedules[0].departure_time + ' WIB (Via ' + schedules[0].via + ')' : '06:00 WIB (Via Tol Gempol)'}</span>
             </div>
             <div class="summary-row">
               <span class="label">Tanggal</span>
-              <span class="value" id="summaryDate">-</span>
+              <span class="value" id="summaryDate">${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             </div>
             <div class="summary-row">
               <span class="label">Jumlah Kursi</span>
@@ -222,26 +222,26 @@
             </div>
             <div class="summary-row">
               <span class="label">Status Kursi</span>
-              <span class="value" id="summarySeatAvail" style="color: #2ecc71;">Tersedia</span>
+              <span class="value" id="summarySeatAvail" style="color: #2ecc71;">🟢 Tersedia (6 sisa)</span>
             </div>
             <div class="summary-row">
               <span class="label">Tarif Dasar</span>
-              <span class="value" id="summaryBasePrice">Rp0</span>
+              <span class="value" id="summaryBasePrice">Rp${(schedules[0] ? schedules[0].price : 150000).toLocaleString('id-ID')} (1 org)</span>
             </div>
             
             <div class="summary-row" id="pickupSurchargeRow" style="display: none; color: var(--gold-300);">
               <span class="label" style="color: var(--gold-300);">+ Jemput Kab. (+20rb/org)</span>
-              <span class="value" id="summaryPickupSurcharge">Rp0</span>
+              <span class="value" id="summaryPickupSurcharge">+Rp0</span>
             </div>
 
             <div class="summary-row" id="dropoffSurchargeRow" style="display: none; color: var(--gold-300);">
               <span class="label" style="color: var(--gold-300);">+ Antar Kab. (+20rb/org)</span>
-              <span class="value" id="summaryDropoffSurcharge">Rp0</span>
+              <span class="value" id="summaryDropoffSurcharge">+Rp0</span>
             </div>
 
             <div class="summary-total">
               <p class="total-label">Total Pembayaran</p>
-              <p class="total-price" id="summaryTotal">Rp0</p>
+              <p class="total-price" id="summaryTotal">Rp${(schedules[0] ? schedules[0].price : 150000).toLocaleString('id-ID')}</p>
             </div>
           </div>
 
@@ -486,17 +486,50 @@
       const formData = {
         schedule_id: document.getElementById('schedule_id').value,
         travel_date: document.getElementById('travel_date').value,
-        passenger_name: document.getElementById('passenger_name').value,
-        passenger_phone: document.getElementById('passenger_phone').value,
-        passenger_email: document.getElementById('passenger_email').value,
+        passenger_name: (document.getElementById('passenger_name').value || '').trim(),
+        passenger_phone: (document.getElementById('passenger_phone').value || '').trim(),
+        passenger_email: (document.getElementById('passenger_email').value || '').trim(),
         passenger_count: document.getElementById('passenger_count').value,
         pickup_zone: getSelectedRadioValue('pickup_zone'),
-        pickup_address: document.getElementById('pickup_address').value,
+        pickup_address: (document.getElementById('pickup_address').value || '').trim(),
         dropoff_zone: getSelectedRadioValue('dropoff_zone'),
-        dropoff_address: document.getElementById('dropoff_address').value,
+        dropoff_address: (document.getElementById('dropoff_address').value || '').trim(),
         payment_method: paymentMethod,
-        notes: document.getElementById('notes').value,
+        notes: (document.getElementById('notes').value || '').trim(),
       };
+
+      if (!formData.passenger_name) {
+        errDiv.textContent = '⚠️ Silakan isi Nama Lengkap Anda terlebih dahulu.';
+        errDiv.style.display = 'block';
+        document.getElementById('passenger_name').focus();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Konfirmasi Pemesanan';
+        return;
+      }
+      if (!formData.passenger_phone) {
+        errDiv.textContent = '⚠️ Silakan isi Nomor WhatsApp/Telepon Anda.';
+        errDiv.style.display = 'block';
+        document.getElementById('passenger_phone').focus();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Konfirmasi Pemesanan';
+        return;
+      }
+      if (!formData.pickup_address) {
+        errDiv.textContent = '⚠️ Silakan isi Alamat Penjemputan (Titik Jemput).';
+        errDiv.style.display = 'block';
+        document.getElementById('pickup_address').focus();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Konfirmasi Pemesanan';
+        return;
+      }
+      if (!formData.dropoff_address) {
+        errDiv.textContent = '⚠️ Silakan isi Alamat Lengkap Tujuan (Titik Antar).';
+        errDiv.style.display = 'block';
+        document.getElementById('dropoff_address').focus();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Konfirmasi Pemesanan';
+        return;
+      }
 
       try {
         const res = await fetch('/booking', {
