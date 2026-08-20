@@ -1325,6 +1325,37 @@ textarea.form-control {
   background: #fffbeb !important;
 }
 
+.schedules-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.schedule-card-opt {
+  display: block;
+  padding: 12px 14px;
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.schedule-card-opt:hover {
+  border-color: var(--navy-300);
+  background: #f8fafc;
+}
+
+.schedule-card-opt:has(input[type="radio"]:checked),
+.schedule-card-opt.active {
+  border-color: var(--gold-500) !important;
+  background: rgba(212, 168, 67, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(212, 168, 67, 0.18);
+}
+
 @media (max-width: 768px) {
   .payment-selector-grid {
     grid-template-columns: 1fr;

@@ -386,8 +386,8 @@
     }
 
     function updateSummary() {
-      const schedId = parseInt(scheduleSelect.value);
-      const sched = schedulesData.find(s => s.id === schedId) || schedulesData[0];
+      const schedId = scheduleSelect.value;
+      const sched = schedulesData.find(s => String(s.id) === String(schedId)) || schedulesData[0];
       const count = parseInt(passengerCount.value || 1);
       const pickupZone = getSelectedRadioValue('pickup_zone');
       const dropoffZone = getSelectedRadioValue('dropoff_zone');
